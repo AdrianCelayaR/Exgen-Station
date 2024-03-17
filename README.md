@@ -1,4 +1,4 @@
-# Exgen-Rails
+# Exgen-Station
 ### Generador de experiencias de usuario por medio de realidad aumentada
 
 ## Sequelize (manuales)
@@ -19,7 +19,7 @@ Ingresar a la carpeta donde se desea trabajar, ingresa en una terminal y ejecuta
 > git clone https://github.com/AdrianCelayaR/Exgen-Station.git
 
 2. Ingresar en el proyecto:
-> cd api-sequelize
+> cd Exgen-Station
 
 3. Instalar las dependecias:
 > npm install
