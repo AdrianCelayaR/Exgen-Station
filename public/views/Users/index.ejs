@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <!-- Agregar bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/3b5f2f6e2e.js" crossorigin="anonymous"></script>
+    
+    <title>Exgen-Station</title>
+  </head>
+  <body>
+    <div class="users_container">
+      <h1>Usuarios</h1>
+      <div class="card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(user) { %>
+              <tr>
+                <td><%= user.firstName %></td>
+                <td><%= user.email %></td>
+                <td>
+                  <a href="/users/edit/<%= user.id %>" class="btn btn-primary">Editar</a>
+                  <a href="/users/delete/<%= user.id %>" class="btn btn-danger">Eliminar</a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</body>
+</html>
+
+<script>
+    // Función para cargar usuarios y mostrarlos en la lista
+    
+</script>
+
+<style>
+  body {
+    display: grid;
+    place-items: center;
+  }
+  tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+</style>
