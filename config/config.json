@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "password": "adriancela",
-    "database": "exgen_station",
+    "password": "contraseña",
+    "database": "conceptoDB",
     "host": "localhost",
     "dialect": "mysql"
   },

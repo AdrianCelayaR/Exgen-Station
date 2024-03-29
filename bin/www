@@ -7,19 +7,29 @@
 var app = require('../app');
 var debug = require('debug')('exgen-station:server');
 var http = require('http');
+var https = require("https");
+var fs = require("fs");
+var config = require('../config/config');
+
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '4001');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
-
-var server = http.createServer(app);
+const llavePrivada = fs.readFileSync(config.privateKeyPath);
+const certificado = fs.readFileSync(config.certificatePath);
+const credenciales = {
+    key: llavePrivada,
+    cert: certificado,
+    passphrase: config.passphrase
+    };
+var server = https.createServer(credenciales, app);
 
 /**
  * Listen on provided port, on all network interfaces.
