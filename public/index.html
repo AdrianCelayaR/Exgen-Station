@@ -35,13 +35,12 @@
   <body data-home-page="Home.html" data-home-page-title="Home"
     data-path-to-root="./" data-include-products="false"
     class="u-body u-xl-mode" data-lang="en">
-    <div class="carta_comenzar_jugar">
+    <div class="carta_comenzar_jugar" id="cartaComenzarJugar" style="display: none;">
       <div class="card" id="carta_datos_comenzar" style="background-color: aliceblue;">
         <card-body>
-          <a href="#"
-                class="u-btn u-btn-step u-btn-step-next u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-1">Comenzar a jugar</a>
-                <a href="Registro-Usuarios.html"
-                class="u-active-none u-border-2 u-border-active-palette-2-dark-1 u-border-hover-palette-2-base u-border-no-left u-border-no-right u-border-no-top u-border-palette-1-base u-btn u-button-style u-hover-none u-none u-text-hover-palette-2-base u-text-palette-2-light-3 u-btn-4" style="color: black;">Registrarse</a>
+          <a href="/arcam" class="btn btn-primary">Comenzar sin ingresar</a>
+                <br>
+                <a href="Registro-Usuarios.html" style="color: black;">Registrarse</a>
         </card-body> 
       </div>
     </div>
@@ -147,8 +146,7 @@
               value="99fe3219-70ac-fd60-d59b-92d02d574366">
           </form>
         </div>
-        <a href="#"
-                class="u-btn u-btn-step u-btn-step-next u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-1">Comenzar a jugar</a>
+        <a href="#" class="u-btn u-btn-step u-btn-step-next u-button-style u-hover-palette-1-dark-1 u-palette-1-base u-btn-1" onclick="enableCard()">Comenzar a jugar</a>
         <a href="Registro-Usuarios.html"
           class="u-active-none u-border-2 u-border-active-palette-2-dark-1 u-border-hover-palette-2-base u-border-no-left u-border-no-right u-border-no-top u-border-palette-1-base u-btn u-button-style u-hover-none u-none u-text-hover-palette-2-base u-text-palette-2-light-3 u-btn-4">Registrarse</a>
       </div>
@@ -393,7 +391,6 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
-      display: none;
     }
     #carta_datos_comenzar{
       position: absolute;
@@ -411,3 +408,10 @@
       place-items: center;
     }
   </style>
+
+  <script>
+    function enableCard() {
+      var containerCartaEmergente = document.getElementById("cartaComenzarJugar");
+      containerCartaEmergente.style.display = "block";
+    }
+  </script>
