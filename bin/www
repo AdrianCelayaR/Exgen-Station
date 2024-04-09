@@ -87,14 +87,28 @@ function onError(error) {
   }
 }
 
+const getIPAddress = () => {
+  const interfaces = require('os').networkInterfaces();
+  let ip = '';
+  for (const dev in interfaces) {
+    const iface = interfaces[dev].filter(details => details.family === 'IPv4' && !details.internal);
+    if (iface.length > 0) ip = iface[0].address;
+  }
+  return ip;
+};
+
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  
+  // Obtain the IP address and log it
+  const ipAddress = getIPAddress();
+  console.log('Server running on IP: https://localhost:' + port);
+  console.log('Server running on IP: https://' + ipAddress + ':' + port);
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tu Aplicación AR</title>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin : 0px; overflow: hidden;">
+    <a-scene embedded arjs='sourceType: webcam;'>
+        <% markersAndModels.forEach(function(item) { %>
+            <a-marker preset="<%= item.marker.preset %>"
+                      type='pattern'
+                      url="<%= item.marker.patt %>"
+                      position="<%= item.marker.position %>"
+                      scale="<%= item.marker.scale %>"
+                      rotation="<%= item.marker.rotation %>">
+                <a-entity gltf-model="<%= item.model.src %>"
+                          position="<%= item.model.position %>"
+                          scale="<%= item.model.scale %>"
+                          rotation="<%= item.model.rotation %>"
+                          animation-mixer="<%= item.model.animConf %>">
+                </a-entity>
+            </a-marker>
+        <% }); %>
+        <a-entity camera></a-entity>
+    </a-scene>
+</body>
+</html>
