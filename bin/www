@@ -10,6 +10,7 @@ var http = require('http');
 var https = require("https");
 var fs = require("fs");
 var config = require('../config/config');
+const ngrok = require('ngrok');
 
 
 /**
@@ -35,7 +36,11 @@ var server = https.createServer(credenciales, app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port,() => {
+  console.log('Server running on IP: https://localhost:' + port);
+  console.log('Server running on IP: https://' + getIPAddress() + ':' + port);
+
+});
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -106,9 +111,4 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-  
-  // Obtain the IP address and log it
-  const ipAddress = getIPAddress();
-  console.log('Server running on IP: https://localhost:' + port);
-  console.log('Server running on IP: https://' + ipAddress + ':' + port);
 }
