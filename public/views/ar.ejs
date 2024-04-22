@@ -28,23 +28,40 @@
     </a-scene>
 
     <script>
+        // Numero de marcadores necesarios a escanear
+        const totalMarkers = <%= markersAndModels.length %>;
+    
+        // TODO: obtener los marcadores escaneados de la base de datos
+        const detectedMarkers = new Set();
+    
         <% markersAndModels.forEach((item, index) => { %>
-          // Nombre unico de variable, evita falla en runtime
           const marker<%= index %> = document.querySelector('#marker-<%= index %>');
-          
+    
           if (marker<%= index %>) {
-            // Marcador Encontrado
             marker<%= index %>.addEventListener('markerFound', function() {
               console.log('Marker #<%= index %> encontrado!');
-              window.open('https://www.google.com', '_blank'); // Open a new tab
+    
+              // Añadir marcador a la lista
+              if (!detectedMarkers.has('<%= index %>')) {
+                detectedMarkers.add('<%= index %>');
+              }
+    
+              //Lista de marcadores escaneados
+              //TODO: Actualizar lista de marcadores encontrados en la base de datos
+              console.log('Lista de marcadores:', Array.from(detectedMarkers));
+    
+              // Revisión de lista completa
+              if (detectedMarkers.size === totalMarkers) {
+                console.log('Todos los marcadores han sido encontrados!');
+                window.open('https://www.google.com', '_blank');
+              }
             });
     
-            // Marcador perdido (despues de encontrarlo)
             marker<%= index %>.addEventListener('markerLost', function() {
               console.log('Marker #<%= index %> perdido!');
             });
           } else {
-            console.error(`Marker not found: #marker-<%= index %>`);
+            console.error(`Marcador no encontrado: #marker-<%= index %>`);
           }
         <% }); %>
     </script>
