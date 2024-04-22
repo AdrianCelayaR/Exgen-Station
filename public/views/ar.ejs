@@ -1,69 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title><%= title %> / AR</title>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
-</head>
-<body style="margin : 0px; overflow: hidden;">
-    <a-scene embedded arjs='sourceType: webcam;'>
-        <% markersAndModels.forEach((item, index) => { %>
-            <a-marker id="marker-<%= index %>"
-                    preset="<%= item.marker.preset %>"
-                    type="pattern"
-                    url="<%= item.marker.patt %>"
-                    position="<%= item.marker.position %>"
-                    scale="<%= item.marker.scale %>"
-                    rotation="<%= item.marker.rotation %>">
-                <a-entity gltf-model="<%= item.model.src %>"
-                          position="<%= item.model.position %>"
-                          scale="<%= item.model.scale %>"
-                          rotation="<%= item.model.rotation %>"
-                          animation-mixer="<%= item.model.animConf %>">
-                </a-entity>
-            </a-marker>
-        <% }); %>
-        <a-entity camera></a-entity>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+  </head>
+  <body style="margin: 0px; overflow: hidden">
+    <a-scene embedded arjs="trackingMethod: best">
+      <% markersAndModels.forEach((item, index) => { %>
+      <a-marker
+        id="marker-<%= index %>"
+        preset="<%= item.marker.preset %>"
+        type="pattern"
+        url="<%= item.marker.patt %>"
+        position="<%= item.marker.position %>"
+        scale="<%= item.marker.scale %>"
+        rotation="<%= item.marker.rotation %>"
+      >
+        <a-text
+          value="<%= item.text.data %>"
+          color="<%= item.text.color %>"
+          position="<%= item.text.position %>"
+          rotation="<%= item.text.rotation %>"
+          scale="<%= item.text.scale %>"
+        >
+        </a-text>
+        <a-entity
+          gltf-model="<%= item.model.src %>"
+          position="<%= item.model.position %>"
+          scale="<%= item.model.scale %>"
+          rotation="<%= item.model.rotation %>"
+          animation-mixer="<%= item.model.animConf %>"
+        >
+        </a-entity>
+      </a-marker>
+      <% }); %>
+      <a-entity camera look-controls></a-entity>
     </a-scene>
 
     <script>
-        // Numero de marcadores necesarios a escanear
-        const totalMarkers = <%= markersAndModels.length %>;
-    
-        // TODO: obtener los marcadores escaneados de la base de datos
-        const detectedMarkers = new Set();
-    
-        <% markersAndModels.forEach((item, index) => { %>
-          const marker<%= index %> = document.querySelector('#marker-<%= index %>');
-    
-          if (marker<%= index %>) {
-            marker<%= index %>.addEventListener('markerFound', function() {
-              console.log('Marker #<%= index %> encontrado!');
-    
-              // Añadir marcador a la lista
-              if (!detectedMarkers.has('<%= index %>')) {
-                detectedMarkers.add('<%= index %>');
-              }
-    
-              //Lista de marcadores escaneados
-              //TODO: Actualizar lista de marcadores encontrados en la base de datos
-              console.log('Lista de marcadores:', Array.from(detectedMarkers));
-    
-              // Revisión de lista completa
-              if (detectedMarkers.size === totalMarkers) {
-                console.log('Todos los marcadores han sido encontrados!');
-                window.open('https://www.google.com', '_blank');
-              }
-            });
-    
-            marker<%= index %>.addEventListener('markerLost', function() {
-              console.log('Marker #<%= index %> perdido!');
-            });
-          } else {
-            console.error(`Marcador no encontrado: #marker-<%= index %>`);
-          }
-        <% }); %>
+      // Numero de marcadores necesarios a escanear
+      const totalMarkers = <%= markersAndModels.length %>;
+
+      // TODO: obtener los marcadores escaneados de la base de datos
+      const detectedMarkers = new Set();
+
+      <% markersAndModels.forEach((item, index) => { %>
+        const marker<%= index %> = document.querySelector('#marker-<%= index %>');
+
+        if (marker<%= index %>) {
+          marker<%= index %>.addEventListener('markerFound', function() {
+            console.log('Marker #<%= index %> encontrado!');
+
+            // Añadir marcador a la lista
+            if (!detectedMarkers.has('<%= index %>')) {
+              detectedMarkers.add('<%= index %>');
+            }
+
+            //Lista de marcadores escaneados
+            //TODO: Actualizar lista de marcadores encontrados en la base de datos
+            console.log('Lista de marcadores:', Array.from(detectedMarkers));
+
+            // Revisión de lista completa
+            if (detectedMarkers.size === totalMarkers) {
+              console.log('Todos los marcadores han sido encontrados!');
+              window.open('https://www.google.com', '_blank');
+            }
+          });
+
+          marker<%= index %>.addEventListener('markerLost', function() {
+            console.log('Marker #<%= index %> perdido!');
+          });
+        } else {
+          console.error(`Marcador no encontrado: #marker-<%= index %>`);
+        }
+      <% }); %>
     </script>
-</body>
+  </body>
 </html>

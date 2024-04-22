@@ -19,7 +19,7 @@ router.get('/arcam', function(req, res, next) {
   const markersAndModels = [
     {
       marker: {
-        preset: "Pokemon 1234\n123143",
+        preset: "Poke",
         patt: "assets/pattterns/pattern-pokebal.patt",
         position: "0 0 0",
         rotation: "0 0 0",
@@ -32,6 +32,13 @@ router.get('/arcam', function(req, res, next) {
         scale: "1 1 1",
         animConf: "loop:repeat",
       },
+      text:{
+        data:"Has Encontrado 2 Pokeballs!!",
+        color:"pink",
+        position:"0 0 -2",
+        rotation:"280 0 0",
+        scale:"2 2 2"
+      }
     },
     {
       marker: {
@@ -48,6 +55,13 @@ router.get('/arcam', function(req, res, next) {
         rotation: "0 50 0",
         animConf: "loop:repeat",
       },
+      text:{
+        data:"Hola Pollitos",
+        color:"green",
+        position:"0 0 -2",
+        rotation:"280 0 0",
+        scale:"2 2 2"
+      }
     },
   ];
   res.render(path.join(__dirname, '../public/views/ar'), { 
