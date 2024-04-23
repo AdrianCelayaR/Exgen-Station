@@ -1,1 +1,3 @@
 SoftwareCertificates/
+config/config.json
+.env

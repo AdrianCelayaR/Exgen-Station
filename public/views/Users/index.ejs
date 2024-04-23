@@ -14,13 +14,20 @@
     <title>Exgen-Station</title>
   </head>
   <body>
+    <% if (typeof notice !== 'undefined' && notice) { %>
+      <div class="alert alert-success" role="notice"><%= notice %></div>
+    <% } %>
+    <% if (typeof alert !== 'undefined' && alert) { %>
+      <div class="alert alert-danger" role="alert"><%= alert %></div>
+    <% } %>
     <div class="users_container">
+      <button class="btn btn-primary" onclick="cerrarSesion()">Cerrar sesión</button>
       <h1>Usuarios</h1>
       <div class="card">
         <table class="table">
           <thead>
             <tr>
-              <th>Nombre</th>
+              <th>Nombre <%=notice%></th>
               <th>UserName</th>
               <th>Correo</th>
               <th>Password</th>
@@ -61,3 +68,11 @@
     background-color: #f2f2f2;
   }
 </style>
+
+<script>
+  function cerrarSesion() {
+    document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
+    document.location.href = '/';
+    // window.location.href = '/auth/logout';
+  }
+</script>

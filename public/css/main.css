@@ -3,6 +3,16 @@ body {
     color: white;
 }
 
+.alert {
+    width: max-content;
+    position: fixed;
+    z-index: 4;
+    top: 5%;
+    right: 3%;
+    animation: fadeOut 3s forwards;
+    animation-delay: 3s;
+}
+
 .navbar-brand {
     font-family: 'Spicy Rice', cursive;
     font-size: 1.5rem;
