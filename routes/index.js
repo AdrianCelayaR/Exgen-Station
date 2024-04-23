@@ -23,21 +23,21 @@ router.get('/arcam', function(req, res, next) {
         patt: "assets/pattterns/pattern-pokebal.patt",
         position: "0 0 0",
         rotation: "0 0 0",
-        scale: ".5 .5 .5",
+        scale: "1 1 1",
       },
       model: {
         src: "assets/models/pokeballDUO.glb",
         position: "0 0 0",
         rotation: "0 270 90",
-        scale: "1 1 1",
+        scale: ".25 .25 .25",
         animConf: "loop:repeat",
       },
       text:{
         data:"Has Encontrado 2 Pokeballs!!",
         color:"pink",
-        position:"0 0 -2",
-        rotation:"280 0 0",
-        scale:"2 2 2"
+        position:"-1 0 1",
+        rotation:"250 0 0",
+        scale:"0.75 0.75 0.75"
       }
     },
     {
@@ -51,16 +51,16 @@ router.get('/arcam', function(req, res, next) {
       model: {
         src: 'assets/models/birds.glb',
         position: "0 0 0",
-        scale: "2 2 2",
-        rotation: "0 50 0",
+        scale: ".25 .25 .25",
+        rotation: "0 0 0",
         animConf: "loop:repeat",
       },
       text:{
         data:"Hola Pollitos",
         color:"green",
-        position:"0 0 -2",
-        rotation:"280 0 0",
-        scale:"2 2 2"
+        position:"-.5 0 1",
+        rotation:"250 0 0",
+        scale:"0.75 0.75 0.75"
       }
     },
   ];
