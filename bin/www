@@ -9,7 +9,7 @@ var debug = require('debug')('exgen-station:server');
 var http = require('http');
 var https = require("https");
 var fs = require("fs");
-var config = require('../config/config');
+var config = require('../configJS/config.js');
 const ngrok = require('ngrok');
 
 
