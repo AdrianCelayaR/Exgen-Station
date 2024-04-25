@@ -108,9 +108,7 @@
 
   const facingMode = isMobile ? 'environment' : 'user';
   
-  //Ajuste de tamaño del canvas para la imagen producida
-  canvas.width = isMobile ? 720 : 1280; //<--- Esto directamente decide el tamaño de la imgen
-  canvas.height = isMobile ? 1280 : 720; //<--- En teléfono se mira bien (Los de la izquierda)
+  
   navigator.mediaDevices.getUserMedia({
     video: { facingMode: { exact: facingMode } }
   })
@@ -124,6 +122,10 @@
   // Listener para el botón de captura
   document.getElementById("takeScreenshot").addEventListener("click", () => {
       const canvas = document.getElementById("canvas");
+      //Ajuste de tamaño del canvas para la imagen producida
+      canvas.width = isMobile ? 720 : webcam.videoWidth; //<--- Esto directamente decide el tamaño de la imgen
+      canvas.height = isMobile ? 1280 : webcam.videoHeight; //<--- En teléfono se mira bien (Los de la izquierda)
+
       const context = canvas.getContext("2d");
 
       // Dibujar imagen de cámara en el canvas
