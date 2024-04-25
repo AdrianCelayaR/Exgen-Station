@@ -20,7 +20,7 @@ router.get('/arcam', function(req, res, next) {
     {
       marker: {
         preset: "Poke",
-        patt: "assets/pattterns/pattern-pokebal.patt",
+        patt: "assets/patterns/pattern-pokebal.patt",
         position: "0 0 0",
         rotation: "0 0 0",
         scale: "1 1 1",
@@ -43,7 +43,7 @@ router.get('/arcam', function(req, res, next) {
     {
       marker: {
         preset: "Bird",
-        patt: 'assets/pattterns/pattern-Pajaro.patt',
+        patt: 'assets/patterns/pattern-Pajaro.patt',
         position: "0 0 0",
         scale: "1 1 1",
         rotation: "0 0 0",

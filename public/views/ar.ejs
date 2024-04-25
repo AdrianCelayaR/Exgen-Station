@@ -6,19 +6,19 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-  
+
     <style>
       #takeScreenshot {
-          position: fixed; 
-          top: 10px; 
-          right: 10px; 
-          z-index: 100; 
-          padding: 10px 20px; 
-          background-color: #28a745; 
-          color: white; 
-          border: none; 
-          border-radius: 5px; 
-          cursor: pointer; 
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 100;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -35,6 +35,7 @@
         rotation="<%= item.marker.rotation %>"
       >
         <a-text
+          id="text-<%= index %>"
           value="<%= item.text.data %>"
           color="<%= item.text.color %>"
           position="<%= item.text.position %>"
@@ -52,13 +53,13 @@
         </a-entity>
       </a-marker>
       <% }); %>
-      <a-entity camera ></a-entity>
+      <a-entity camera> </a-entity>
     </a-scene>
 
     <!-- Fuente de video -->
-    <video id="webcam" autoplay style="display: none;"></video>
-     <!-- Canvas para captura de screenshots -->
-     <canvas id="canvas" width="800" height="600" style="display: none;"></canvas>
+    <video id="webcam" autoplay style="display: none"></video>
+    <!-- Canvas para captura de screenshots -->
+    <canvas id="canvas" width="800" height="600" style="display: none"></canvas>
 
     <button id="takeScreenshot">Tomar Captura</button>
 
@@ -68,17 +69,31 @@
 
       // TODO: obtener los marcadores escaneados de la base de datos
       const detectedMarkers = new Set();
+      // BANDERA DE DETECTAR TODOS
+      let allDetected=false;
+
+      //REPRODUCIR AUDIO
+      function playSound(path,loop){
+        let audio = new Audio(path);
+        audio.loop=loop;
+        audio.play();
+      }
 
       <% markersAndModels.forEach((item, index) => { %>
         const marker<%= index %> = document.querySelector('#marker-<%= index %>');
+        const text<%= index %> = document.querySelector('#text-<%= index %>');
 
         if (marker<%= index %>) {
+
           marker<%= index %>.addEventListener('markerFound', function() {
-            console.log('Marker #<%= index %> encontrado!');
+            console.log('Marker ');
+            playSound('../assets/sounds/mixkit-long-pop-2358.wav',false)
+            // var strings=text<%= index %>.getAttribute("value").split(" ");
 
             // Añadir marcador a la lista
             if (!detectedMarkers.has('<%= index %>')) {
               detectedMarkers.add('<%= index %>');
+              playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav',false)
             }
 
             //Lista de marcadores escaneados
@@ -87,13 +102,22 @@
 
             // Revisión de lista completa
             if (detectedMarkers.size === totalMarkers) {
+
               console.log('Todos los marcadores han sido encontrados!');
-              window.open('https://www.google.com', '_blank');
+              if(!allDetected){
+                playSound('../assets/sounds/mixkit-small-win-2020.wav',false)
+                setTimeout(function() {
+                  window.open('https://www.google.com', '_blank');
+                }, 2000); // Retraso de 2000 milisegundos (2 segundos)
+              }
+              allDetected=true
             }
           });
 
           marker<%= index %>.addEventListener('markerLost', function() {
             console.log('Marker #<%= index %> perdido!');
+            playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav',false)
+
           });
         } else {
           console.error(`Marcador no encontrado: #marker-<%= index %>`);
@@ -101,53 +125,53 @@
       <% }); %>
     </script>
 
-<!--Script de captura de pantalla-->
-<script>
-  // Tomar fuente de video dependiendo del dispositivo
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    <!--Script de captura de pantalla-->
+    <script>
+      // Tomar fuente de video dependiendo del dispositivo
+      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-  const facingMode = isMobile ? 'environment' : 'user';
-  
-  
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: { exact: facingMode } }
-  })
-  .then((stream) => {
-    document.getElementById("webcam").srcObject = stream;
-  })
-  .catch((err) => {
-    console.error("Error accessing camera:", err);
-  });
+      const facingMode = isMobile ? "environment" : "user";
 
-  // Listener para el botón de captura
-  document.getElementById("takeScreenshot").addEventListener("click", () => {
-      const canvas = document.getElementById("canvas");
-      //Ajuste de tamaño del canvas para la imagen producida
-      canvas.width = isMobile ? 720 : webcam.videoWidth; //<--- Esto directamente decide el tamaño de la imgen
-      canvas.height = isMobile ? 1280 : webcam.videoHeight; //<--- En teléfono se mira bien (Los de la izquierda)
+      navigator.mediaDevices
+        .getUserMedia({
+          video: { facingMode: { exact: facingMode } },
+        })
+        .then((stream) => {
+          document.getElementById("webcam").srcObject = stream;
+        })
+        .catch((err) => {
+          console.error("Error accessing camera:", err);
+        });
 
-      const context = canvas.getContext("2d");
+      // Listener para el botón de captura
+      document.getElementById("takeScreenshot").addEventListener("click", () => {
+        const canvas = document.getElementById("canvas");
+        //Ajuste de tamaño del canvas para la imagen producida
+        canvas.width = isMobile ? 720 : webcam.videoWidth; //<--- Esto directamente decide el tamaño de la imgen
+        canvas.height = isMobile ? 1280 : webcam.videoHeight; //<--- En teléfono se mira bien (Los de la izquierda)
 
-      // Dibujar imagen de cámara en el canvas
-      const video = document.getElementById("webcam");
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const context = canvas.getContext("2d");
 
-      // Dibujar contenido del a-scene en el canvas
-      const aScene = document.querySelector("a-scene");
-      const renderer = aScene.renderer;
+        // Dibujar imagen de cámara en el canvas
+        const video = document.getElementById("webcam");
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      if (renderer) {
+        // Dibujar contenido del a-scene en el canvas
+        const aScene = document.querySelector("a-scene");
+        const renderer = aScene.renderer;
+
+        if (renderer) {
           renderer.render(aScene.object3D, aScene.camera);
           context.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
-      }
+        }
 
-      // Descargar archivo
-      const combinedImage = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = combinedImage;
-      link.download = "combined_screenshot.png";
-      link.click();
-  });
-  </script>
+        // Descargar archivo
+        const combinedImage = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = combinedImage;
+        link.download = "combined_screenshot.png";
+        link.click();
+      });
+    </script>
   </body>
 </html>
