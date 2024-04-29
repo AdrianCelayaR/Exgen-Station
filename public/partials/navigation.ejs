@@ -406,7 +406,11 @@ body {
       <ul class="navlinks">
         <li><a href="/about"><i class="fas fa-info"></i> About</a></li>
         <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
-        <li><a href="/auth/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+        <% if (current_user) { %>
+            <li><a href="/" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <% }else{ %>
+            <li><a href="/auth/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+        <% } %>
       </ul>
     </div>
     <span class="navTrigger">
@@ -435,5 +439,9 @@ body {
     $("#mainListDiv").toggleClass("show_list");
     $("#mainListDiv").fadeIn();
   });
-
+    function cerrarSesion() {
+      document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
+      document.location.href = '/';
+      // window.location.href = '/auth/logout';
+    }
 </script>

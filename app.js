@@ -12,6 +12,7 @@ var authRouter = require('./routes/auth');
 
 var app = express();
 
+app.set('views', __dirname + '/public/views');
 app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));

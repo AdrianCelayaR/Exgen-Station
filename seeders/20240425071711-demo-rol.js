@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Rol', [
+    return queryInterface.bulkInsert('Rols', [
       {
         nombre: 'Administrador',
         createdAt: new Date(),
@@ -23,7 +23,7 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Rol', {},
+    return queryInterface.bulkDelete('Rols', {},
       {});
   }
 };

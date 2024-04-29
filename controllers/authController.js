@@ -125,8 +125,16 @@ exports.register = async (req, res) => {
             email: email,
             password: hashPassword
         }).then(user => {
-            req.flash('notice', 'Usuario registrado correctamente');
-            res.redirect('/auth/login');
+            models.userrols.create({
+                userId: user.id,
+                roleId: 3
+            }).then(userrol => {
+                req.flash('notice', 'Usuario registrado correctamente');
+                res.redirect('/auth/login');
+            }).catch(err => {
+                req.flash('alert', err.message);
+                res.redirect('/auth/register');
+            });
             // return res.render(path.join(__dirname, '../public/views/login'), { title: 'Login / Exgen Station', notice: "Usuario registrado correctamente" });
         }).catch(err => {
             req.flash('alert', err.message);

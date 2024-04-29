@@ -28,8 +28,12 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false
         }
     }, {});
+    // Definir las asociaciones aquí
     users.associate = function (models) {
-    // associations can be defined here
-  };
+      // Asociación con UserRol
+      users.hasMany(models.userrols, {
+        foreignKey: 'userId',
+      });
+    };
   return users;
 };

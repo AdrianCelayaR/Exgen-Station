@@ -1,10 +1,24 @@
 var express = require('express');
+const models = require("../models");
+const dotenv = require('dotenv');
+const jsonwebtoken = require('jsonwebtoken');
 const path = require('path');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station' });
+router.get('/', async function(req, res, next) {
+  const cookieJWT = req.cookies["jwt"];
+  if (!cookieJWT) {
+    return res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station', current_user: null });
+  }
+  
+  const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+  const current_user = await models.users.findOne({
+      where: {
+          id: decoded.id
+      }
+  });
+  res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station' , current_user: current_user});
 });
 
 router.get('/about', function(req, res, next) {
