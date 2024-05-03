@@ -7,20 +7,7 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
 
-    <style>
-      #takeScreenshot {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 100;
-        padding: 10px 20px;
-        background-color: #28a745;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-    </style>
+    <link rel="stylesheet" href="../stylesheets/arScreen.css" />
   </head>
   <body style="margin: 0px; overflow: hidden">
     <a-scene embedded arjs="sourceType: webcam;">
@@ -61,7 +48,10 @@
     <!-- Canvas para captura de screenshots -->
     <canvas id="canvas" width="800" height="600" style="display: none"></canvas>
 
-    <button id="takeScreenshot">Tomar Captura</button>
+    <button id="takeScreenshot">
+      <img src="../images/icons/photo-camera (2).png" width="75" height="75" />
+    </button>
+    <progress id="progresoMarker" value="0" max="<%= markersAndModels.length %>"></progress>
 
     <script>
       // Numero de marcadores necesarios a escanear
@@ -72,11 +62,30 @@
       // BANDERA DE DETECTAR TODOS
       let allDetected=false;
 
+      //Barra Progreso
+      var barra=document.getElementById("progresoMarker");
+
       //REPRODUCIR AUDIO
       function playSound(path,loop){
         let audio = new Audio(path);
         audio.loop=loop;
         audio.play();
+      }
+
+      function updateProgress(value) {
+        var starPosition = (100 / <%= markersAndModels.length %>) * value;
+        if(starPosition==100)
+          starPosition=99;
+        console.log(starPosition)
+        const starIcon = document.createElement('span');
+        starIcon.innerHTML = '&#9733;'; // Unicode for star icon
+        starIcon.style.position = 'absolute';
+        starIcon.style.top = '-1px'; // Adjust as needed
+        starIcon.style.left = `${starPosition - 1}%`;
+        starIcon.style.fontSize = '35px'; // Adjust size as needed
+        starIcon.style.color = 'gold'; // Adjust color as needed
+        starIcon.style.zIndex=202;
+        barra.parentNode.appendChild(starIcon);
       }
 
       <% markersAndModels.forEach((item, index) => { %>
@@ -88,11 +97,15 @@
           marker<%= index %>.addEventListener('markerFound', function() {
             console.log('Marker ');
             playSound('../assets/sounds/mixkit-long-pop-2358.wav',false)
+            console.log("barra "+barra.value)
             // var strings=text<%= index %>.getAttribute("value").split(" ");
 
             // Añadir marcador a la lista
             if (!detectedMarkers.has('<%= index %>')) {
               detectedMarkers.add('<%= index %>');
+              console.log(detectedMarkers.size);
+              barra.value=detectedMarkers.size;
+              updateProgress(barra.value);
               playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav',false)
             }
 
@@ -106,9 +119,9 @@
               console.log('Todos los marcadores han sido encontrados!');
               if(!allDetected){
                 playSound('../assets/sounds/mixkit-small-win-2020.wav',false)
-                setTimeout(function() {
-                  window.open('https://www.google.com', '_blank');
-                }, 2000); // Retraso de 2000 milisegundos (2 segundos)
+                // setTimeout(function() {
+                //   window.open('https://www.google.com', '_blank');
+                // }, 2000); // Retraso de 2000 milisegundos (2 segundos)
               }
               allDetected=true
             }
@@ -125,53 +138,7 @@
       <% }); %>
     </script>
 
-    <!--Script de captura de pantalla-->
-    <script>
-      // Tomar fuente de video dependiendo del dispositivo
-      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-      const facingMode = isMobile ? "environment" : "user";
-
-      navigator.mediaDevices
-        .getUserMedia({
-          video: { facingMode: { exact: facingMode } },
-        })
-        .then((stream) => {
-          document.getElementById("webcam").srcObject = stream;
-        })
-        .catch((err) => {
-          console.error("Error accessing camera:", err);
-        });
-
-      // Listener para el botón de captura
-      document.getElementById("takeScreenshot").addEventListener("click", () => {
-        const canvas = document.getElementById("canvas");
-        //Ajuste de tamaño del canvas para la imagen producida
-        canvas.width = isMobile ? 720 : webcam.videoWidth; //<--- Esto directamente decide el tamaño de la imgen
-        canvas.height = isMobile ? 1280 : webcam.videoHeight; //<--- En teléfono se mira bien (Los de la izquierda)
-
-        const context = canvas.getContext("2d");
-
-        // Dibujar imagen de cámara en el canvas
-        const video = document.getElementById("webcam");
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Dibujar contenido del a-scene en el canvas
-        const aScene = document.querySelector("a-scene");
-        const renderer = aScene.renderer;
-
-        if (renderer) {
-          renderer.render(aScene.object3D, aScene.camera);
-          context.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
-        }
-
-        // Descargar archivo
-        const combinedImage = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = combinedImage;
-        link.download = "combined_screenshot.png";
-        link.click();
-      });
-    </script>
+    <!-- Script de captura de pantalla -->
+    <script type="text/javascript" src="../javascripts/screenshoot.js"></script>
   </body>
 </html>

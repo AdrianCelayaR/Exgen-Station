@@ -1,0 +1,53 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#takeScreenshot {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 100;
+  padding: 10px 20px;
+  background-color: #142b31;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-family: "Quicksand", sans-serif;
+  font-size: 1.5rem;
+}
+
+#takeScreenshot:hover {
+  background-color: #345364;
+}
+
+#takeScreenshot:active {
+  background-color: #404734;
+}
+
+#progresoMarker {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  z-index: 100;
+  padding: 10px 10px;
+}
+
+/* Rest of your CSS */
+progress {
+  border-radius: 7px;
+  width: 100%;
+  height: 30px;
+}
+
+progress::-webkit-progress-bar {
+  background-color: #ece9dd;
+  border-radius: 7px;
+}
+
+progress::-webkit-progress-value {
+  background-color: #b08441;
+  border-radius: 7px;
+  box-shadow: 1px 1px 2px 2px #142b31;
+}
