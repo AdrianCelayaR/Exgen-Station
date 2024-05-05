@@ -7,7 +7,7 @@ const session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var markersRouter = require('./routes/generateMarker');
+var markersRouter = require('./routes/markers');
 var arRouter = require('./routes/ar');
 var authRouter = require('./routes/auth');
 
