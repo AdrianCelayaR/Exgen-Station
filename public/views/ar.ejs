@@ -11,34 +11,34 @@
   </head>
   <body style="margin: 0px; overflow: hidden">
     <a-scene embedded arjs="sourceType: webcam;">
-      <% markersAndModels.forEach((item, index) => { %>
-      <a-marker
-        id="marker-<%= index %>"
-        preset="<%= item.marker.preset %>"
-        type="pattern"
-        url="<%= item.marker.patt %>"
-        position="<%= item.marker.position %>"
-        scale="<%= item.marker.scale %>"
-        rotation="<%= item.marker.rotation %>"
-      >
-        <a-text
-          id="text-<%= index %>"
-          value="<%= item.text.data %>"
-          color="<%= item.text.color %>"
-          position="<%= item.text.position %>"
-          rotation="<%= item.text.rotation %>"
-          scale="<%= item.text.scale %>"
+      <% markersAndModels.forEach(function(marker) { %>
+        <a-marker
+          id="marker-<%= marker.id %>"
+          preset="<%= marker.preset %>"
+          type="pattern"
+          url="<%= marker.patt %>"
+          position="<%= marker.marker_position %>"
+          scale="<%= marker.marker_scale %>"
+          rotation="<%= marker.marker_rotation %>"
         >
-        </a-text>
-        <a-entity
-          gltf-model="<%= item.model.src %>"
-          position="<%= item.model.position %>"
-          scale="<%= item.model.scale %>"
-          rotation="<%= item.model.rotation %>"
-          animation-mixer="<%= item.model.animConf %>"
-        >
-        </a-entity>
-      </a-marker>
+          <a-text
+            id="text-<%= marker.id %>"
+            value="<%= marker.text_data %>"
+            color="<%= marker.text_color %>"
+            position="<%= marker.text_position %>"
+            rotation="<%= marker.text_rotation %>"
+            scale="<%= marker.text_scale %>"
+          >
+          </a-text>
+          <a-entity
+            gltf-model="<%= marker.src %>"
+            position="<%= marker.model_position %>"
+            scale="<%= marker.model_scale %>"
+            rotation="<%= marker.model_rotation %>"
+            animation-mixer="<%= marker.anim_conf %>"
+          >
+          </a-entity>
+        </a-marker>
       <% }); %>
       <a-entity camera> </a-entity>
     </a-scene>
@@ -71,6 +71,7 @@
         audio.loop=loop;
         audio.play();
       }
+      
 
       function updateProgress(value) {
         var starPosition = (100 / <%= markersAndModels.length %>) * value;
@@ -88,21 +89,21 @@
         barra.parentNode.appendChild(starIcon);
       }
 
-      <% markersAndModels.forEach((item, index) => { %>
-        const marker<%= index %> = document.querySelector('#marker-<%= index %>');
-        const text<%= index %> = document.querySelector('#text-<%= index %>');
+      <% markersAndModels.forEach(function(marker) { %>
+        const marker<%= marker.id %> = document.querySelector('#marker-<%= marker.id %>');
+        const text<%= marker.id %> = document.querySelector('#text-<%= marker.id %>');
 
-        if (marker<%= index %>) {
+        if (marker<%= marker.id %>) {
 
-          marker<%= index %>.addEventListener('markerFound', function() {
-            console.log('Marker ');
+          marker<%= marker.id %>.addEventListener('markerFound', function() {
+            console.log('Marker <%= marker.id %> encontrado!');
             playSound('../assets/sounds/mixkit-long-pop-2358.wav',false)
             console.log("barra "+barra.value)
-            // var strings=text<%= index %>.getAttribute("value").split(" ");
+            // var strings=text<%= marker.id %>.getAttribute("value").split(" ");
 
             // Añadir marcador a la lista
-            if (!detectedMarkers.has('<%= index %>')) {
-              detectedMarkers.add('<%= index %>');
+            if (!detectedMarkers.has('<%= marker.id %>')) {
+              detectedMarkers.add('<%= marker.id %>');
               console.log(detectedMarkers.size);
               barra.value=detectedMarkers.size;
               updateProgress(barra.value);
@@ -126,14 +127,13 @@
               allDetected=true
             }
           });
-
-          marker<%= index %>.addEventListener('markerLost', function() {
-            console.log('Marker #<%= index %> perdido!');
+          marker<%= marker.id %>.addEventListener('markerLost', function() {
+            console.log('Marker #<%= marker.id %> perdido!');
             playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav',false)
 
           });
         } else {
-          console.error(`Marcador no encontrado: #marker-<%= index %>`);
+          console.error(`Marcador no encontrado: #marker-<%= marker.id %>`);
         }
       <% }); %>
     </script>

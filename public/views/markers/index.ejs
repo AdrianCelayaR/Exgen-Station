@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/stylesidebar.css">
+    <!-- Agregar bootstrap -->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <title>Exgen-Station</title>
+  </head>
+  <body>
+    <%- include('../../partials/sidebar') %>
+    <% if (typeof notice !== 'undefined' && notice) { %>
+      <div class="alert alert-success" role="notice"><%= notice %></div>
+    <% } %>
+    <% if (typeof alert !== 'undefined' && alert) { %>
+      <div class="alert alert-danger" role="alert"><%= alert %></div>
+    <% } %>
+    <section class="home">
+      <div class="markers_container">
+        <div class="text">Marcadores</div>
+        <div style="display: flex; justify-content: end; margin: 0 0 10px;">
+          <a href="/markers/new" class="btn btn-primary" style="background-color: #2fabca;">Nuevo marcador</a>
+        </div>
+        <div class="card">
+          <div class="card-body table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Activo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% markers.forEach(function(marker) { %>
+                  <tr>
+                    <td><%= marker.preset %></td>
+                    <td><%= marker.activo ? "Si" : "No" %></td>
+                    <td>
+                      <a href="/markers/edit/<%= marker.id %>" class="btn btn-primary" style="background-color: #2fabca;">Editar</a>
+                      <a href="/markers/delete/<%= marker.id %>" class="btn btn-danger" style="background-color: #cd2b54;" onclick="return confirm(`¿Está seguro que desea eliminar a este marcador?`)">Eliminar</a>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>
+
+<script>
+    // Función para cargar usuarios y mostrarlos en la lista
+    
+</script>
+
+<style>
+  .alert {
+    width: max-content;
+    position: fixed;
+    z-index: 5;
+    top: 5%;
+    right: 3%;
+    animation: fadeOut 3s forwards;
+    animation-delay: 3s;
+  }
+  .markers_container {
+    width: auto;
+  }
+
+</style>
+
+<script>
+  function cerrarSesion() {
+    document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
+    document.location.href = '/';
+    // window.location.href = '/auth/logout';
+  }
+</script>
