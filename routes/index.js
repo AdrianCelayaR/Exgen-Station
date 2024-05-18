@@ -13,12 +13,30 @@ router.get('/', async function(req, res, next) {
   }
   
   const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+  const user_rol = await models.userrols.findOne({
+    where: {
+      userId: decoded.id
+    }
+  });
   const current_user = await models.users.findOne({
+      include: models.userrols,
       where: {
           id: decoded.id
       }
   });
-  res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station' , current_user: current_user});
+  let rol = null;
+  // if (user_rol) {
+  //   rol = await models.rols.findOne({
+  //     where: {
+  //       id: user_rol.rolId
+  //     }
+  //   });
+  // }
+  if (user_rol.roleId === 1) {
+    rol = 'admin';
+  }
+  
+  res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station' , current_user: current_user, rol: rol});
 });
 
 router.get('/about', function(req, res, next) {

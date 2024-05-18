@@ -406,7 +406,7 @@ body {
       <ul class="navlinks">
         <li><a href="/about"><i class="fas fa-info"></i> About</a></li>
         <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
-        <% if (current_user) { %>
+        <% if (current_user && rol === 'admin') { %>
             <li><a href="/users"><i class="fas fa-sign-in-alt"></i> Admin</a></li>
         <% } %>
         <% if (current_user) { %>
