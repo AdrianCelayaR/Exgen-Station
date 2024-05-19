@@ -30,7 +30,11 @@ module.exports = (sequelize, DataTypes) => {
     }, {});
     // Definir las asociaciones aquí
     recompensas.associate = function (models) {
-      // associations can be defined here
+      recompensas.belongsToMany(models.users, {
+        through: 'recompensaUsuarios', // Este es el modelo de tabla intermedia
+        foreignKey: 'recompensaId', // Clave foránea en recompensaUsuarios que se refiere a recompensas
+        otherKey: 'userId' // Clave foránea en recompensaUsuarios que se refiere a users
+      });
     };
   return recompensas;
 };
