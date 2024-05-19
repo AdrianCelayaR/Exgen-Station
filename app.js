@@ -8,6 +8,7 @@ const session = require('express-session');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var markersRouter = require('./routes/markers');
+var recompensasRouter = require('./routes/recompensas');
 var arRouter = require('./routes/ar');
 var authRouter = require('./routes/auth');
 
@@ -35,6 +36,7 @@ app.use('/contact', indexRouter);
 
 app.use('/users', usersRouter);
 app.use('/markers', markersRouter);
+app.use('/recompensas', recompensasRouter);
 
 app.use('/auth', authRouter);
 
