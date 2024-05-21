@@ -1,41 +1,65 @@
-var express = require('express');
+var express = require("express");
 const models = require("../models");
-const dotenv = require('dotenv');
-const jsonwebtoken = require('jsonwebtoken');
-const path = require('path');
+const dotenv = require("dotenv");
+const jsonwebtoken = require("jsonwebtoken");
+const path = require("path");
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', async function(req, res, next) {
+router.get("/", async function (req, res, next) {
   const cookieJWT = req.cookies["jwt"];
   if (!cookieJWT) {
-    return res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station', current_user: null });
+    return res.render(path.join(__dirname, "../public/views/index"), {
+      title: "Exgen Station",
+      current_user: null,
+    });
   }
-  
+
   const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
-  const current_user = await models.users.findOne({
-      where: {
-          id: decoded.id
-      }
+  const user_rol = await models.userrols.findOne({
+    where: {
+      userId: decoded.id,
+    },
   });
-  res.render(path.join(__dirname, '../public/views/index'), { title: 'Exgen Station' , current_user: current_user});
+  const current_user = await models.users.findOne({
+    include: models.userrols,
+    where: {
+      id: decoded.id,
+    },
+  });
+  let rol = null;
+  // if (user_rol) {
+  //   rol = await models.rols.findOne({
+  //     where: {
+  //       id: user_rol.rolId
+  //     }
+  //   });
+  // }
+  if (user_rol.roleId === 1) {
+    rol = "admin";
+  }
+  res.render(path.join(__dirname, "../public/views/index"), {
+    title: "Exgen Station",
+    current_user: current_user,
+    rol: rol,
+  });
 });
 
-router.get('/about', function(req, res, next) {
-  res.render(path.join(__dirname, '../public/views/about'), { title: 'Exgen Station' });
+router.get("/about", function (req, res, next) {
+  res.render(path.join(__dirname, "../public/views/about"), { title: "Exgen Station" });
 });
 
-router.get('/contact', function(req, res, next) {
-  res.render(path.join(__dirname, '../public/views/contact'), { title: 'Exgen Station' });
+router.get("/contact", function (req, res, next) {
+  res.render(path.join(__dirname, "../public/views/contact"), { title: "Exgen Station" });
 });
 
-router.get('/arcam', async function(req, res, next) {
+router.get("/arcam", async function (req, res, next) {
   const markersAndModels = await models.markers.findAll({
     where: {
-      activo: true
-    }
+      activo: true,
+    },
   });
-
+  console.log(markersAndModels);
   // const markersAndModels = [
   //   {
   //     marker: {
@@ -84,9 +108,9 @@ router.get('/arcam', async function(req, res, next) {
   //     }
   //   },
   // ];
-  res.render(path.join(__dirname, '../public/views/ar'), { 
-    title: 'Exgen Station',
-    markersAndModels: markersAndModels
+  res.render(path.join(__dirname, "../public/views/ar"), {
+    title: "Exgen Station",
+    markersAndModels: markersAndModels,
   });
 });
 module.exports = router;
