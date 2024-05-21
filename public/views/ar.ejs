@@ -12,33 +12,33 @@
   <body style="margin: 0px; overflow: hidden">
     <a-scene embedded arjs="sourceType: webcam;">
       <% markersAndModels.forEach(function(marker) { %>
-        <a-marker
-          id="marker-<%= marker.id %>"
-          preset="<%= marker.preset %>"
-          type="pattern"
-          url="<%= marker.patt %>"
-          position="<%= marker.marker_position %>"
-          scale="<%= marker.marker_scale %>"
-          rotation="<%= marker.marker_rotation %>"
+      <a-marker
+        id="marker-<%= marker.id %>"
+        preset="<%= marker.preset %>"
+        type="pattern"
+        url="<%= marker.patt %>"
+        position="<%= marker.marker_position %>"
+        scale="<%= marker.marker_scale %>"
+        rotation="<%= marker.marker_rotation %>"
+      >
+        <a-text
+          id="text-<%= marker.id %>"
+          value="<%= marker.text_data %>"
+          color="<%= marker.text_color %>"
+          position="<%= marker.text_position %>"
+          rotation="<%= marker.text_rotation %>"
+          scale="<%= marker.text_scale %>"
         >
-          <a-text
-            id="text-<%= marker.id %>"
-            value="<%= marker.text_data %>"
-            color="<%= marker.text_color %>"
-            position="<%= marker.text_position %>"
-            rotation="<%= marker.text_rotation %>"
-            scale="<%= marker.text_scale %>"
-          >
-          </a-text>
-          <a-entity
-            gltf-model="<%= marker.src %>"
-            position="<%= marker.model_position %>"
-            scale="<%= marker.model_scale %>"
-            rotation="<%= marker.model_rotation %>"
-            animation-mixer="<%= marker.anim_conf %>"
-          >
-          </a-entity>
-        </a-marker>
+        </a-text>
+        <a-entity
+          gltf-model="<%= marker.src %>"
+          position="<%= marker.model_position %>"
+          scale="<%= marker.model_scale %>"
+          rotation="<%= marker.model_rotation %>"
+          animation-mixer="<%= marker.anim_conf %>"
+        >
+        </a-entity>
+      </a-marker>
       <% }); %>
       <a-entity camera> </a-entity>
     </a-scene>
@@ -48,14 +48,44 @@
     <!-- Canvas para captura de screenshots -->
     <canvas id="canvas" width="800" height="600" style="display: none"></canvas>
 
-    <button id="takeScreenshot">
-      <img src="../images/icons/photo-camera (2).png" width="75" height="75" />
-    </button>
-    <progress id="progresoMarker" value="0" max="<%= markersAndModels.length %>"></progress>
+    <div id="actionElements">
+      <div id="progesoContainer">
+        <progress id="progresoMarker" value="0" max="<%= markersAndModels.length %>"></progress>
+      </div>
+
+      <!-- BOTON SCREENSHOT -->
+      <button class="arButton" id="takeScreenshot">
+        <img src="../images/icons/photo-camera (2).png" width="75" height="75" />
+      </button>
+
+      <!-- MENU INFORMACION -->
+      <button class="arButton" id="openMenu">
+        <img src="../images/icons/info.png" width="75" height="75" />
+      </button>
+
+      <div class="menu" id="menu">
+        <div class="menuContenido">
+          <img src="../images/th1.jpeg" width="75" height="75" />
+          <h2 id="nombreUser">HOLA USUARIO</h2>
+          <!-- LISTA DE MARCADORES ENCONTRADOS -->
+          <h3>Marcadores Encontrados:</h3>
+          <ul class="lista" id="listaUser"></ul>
+          <div class="btnwrap">
+            <button class="menuButton" id="exitAR">Salir</button>
+            <button class="menuButton" id="closeMenu">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script>
       // Numero de marcadores necesarios a escanear
       const totalMarkers = <%= markersAndModels.length %>;
+
+      <% if (currentUser) { %>
+      const name = '<%= currentUser.fullName %>';
+      console.log(name);
+      <% } %>
 
       // TODO: obtener los marcadores escaneados de la base de datos
       const detectedMarkers = new Set();
@@ -65,28 +95,55 @@
       //Barra Progreso
       var barra=document.getElementById("progresoMarker");
 
+      //Lista Marcadores Usuario
+      var lista = document.getElementById("listaUser");
+
+      var openBTN= document.getElementById("openMenu");
+      var closeBTN = document.getElementById("closeMenu");
+      var exitBTN = document.getElementById("exitAR");
+      var menu= document.getElementById("menu");
+      var uName= document.getElementById("nombreUser");
+
+
+      openBTN.addEventListener("click",()=>{
+        menu.classList.add("open");
+      });
+
+      closeBTN.addEventListener("click",()=>{
+        menu.classList.remove("open");
+      });
+
+      exitBTN.addEventListener("click",()=>{
+        window.history.back();
+      });
+
+      if(name!=null){
+        uName.innerHTML="Hola "+name;
+      }
+
       //REPRODUCIR AUDIO
       function playSound(path,loop){
         let audio = new Audio(path);
         audio.loop=loop;
         audio.play();
       }
-      
 
       function updateProgress(value) {
-        var starPosition = (100 / <%= markersAndModels.length %>) * value;
-        if(starPosition==100)
-          starPosition=99;
-        console.log(starPosition)
-        const starIcon = document.createElement('span');
-        starIcon.innerHTML = '&#9733;'; // Unicode for star icon
-        starIcon.style.position = 'absolute';
-        starIcon.style.top = '-1px'; // Adjust as needed
-        starIcon.style.left = `${starPosition - 1}%`;
-        starIcon.style.fontSize = '35px'; // Adjust size as needed
-        starIcon.style.color = 'gold'; // Adjust color as needed
-        starIcon.style.zIndex=202;
-        barra.parentNode.appendChild(starIcon);
+        // Calculate the position for each progress point
+        const starPosition = (100 / totalMarkers) * value;
+        const progressPoint = document.createElement('span');
+        progressPoint.className = 'progress-point';
+        progressPoint.style.left = `${starPosition-3}%`;
+        progressPoint.innerHTML = '&#9733;'; // Unicode for star icon or any emoji
+        barra.parentNode.appendChild(progressPoint);
+        setTimeout(() => {progressPoint.classList.add('show');}, 30);
+      }
+
+      function updateList(value){
+        var item = document.createElement("li");
+        item.className="item-usuario";
+        item.innerHTML=value;
+        lista.parentNode.appendChild(item);
       }
 
       <% markersAndModels.forEach(function(marker) { %>
@@ -107,6 +164,10 @@
               console.log(detectedMarkers.size);
               barra.value=detectedMarkers.size;
               updateProgress(barra.value);
+
+              const presetValue = '<%= marker.preset %>';
+              console.log(presetValue);
+              updateList(presetValue);
               playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav',false)
             }
 

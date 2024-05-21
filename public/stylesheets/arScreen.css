@@ -1,53 +1,170 @@
 * {
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Quicksand", sans-serif;
 }
 
-#takeScreenshot {
+.arButton {
   position: fixed;
-  bottom: 10px;
-  left: 10px;
   z-index: 100;
-  padding: 10px 20px;
   background-color: #142b31;
   color: white;
-  border: none;
+  border: 2px solid #000;
   border-radius: 50%;
+  box-shadow: 5px 5px 0px #000;
+  transition: all 0.2s ease;
   cursor: pointer;
-  font-family: "Quicksand", sans-serif;
   font-size: 1.5rem;
 }
 
-#takeScreenshot:hover {
-  background-color: #345364;
+#takeScreenshot {
+  padding: 10px 20px;
+  left: 10px;
+  bottom: 10px;
 }
 
-#takeScreenshot:active {
-  background-color: #404734;
+#openMenu {
+  padding: 10px 20px;
+  right: 10px;
+  bottom: 10px;
+}
+
+.arButton:hover {
+  background-color: #345364;
+  border: 2px solid #b08441;
+  box-shadow: 5px 5px 0px #b08441;
+}
+
+.arButton:active {
+  background-color: white;
+  box-shadow: none;
+  transform: translateY(4px);
+}
+
+#progesoContainer {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 100;
+  padding: 1;
+  box-sizing: border-box;
 }
 
 #progresoMarker {
-  position: fixed;
-  top: 10px;
-  left: 0;
-  z-index: 100;
-  padding: 10px 10px;
-}
-
-/* Rest of your CSS */
-progress {
-  border-radius: 7px;
   width: 100%;
-  height: 30px;
+  border-radius: 30px;
+  height: 35px;
+  border: 2px solid #000;
+  box-shadow: 5px 5px 0px #000;
+  box-sizing: border-box;
 }
 
-progress::-webkit-progress-bar {
+#progresoMarker::-webkit-progress-bar {
   background-color: #ece9dd;
-  border-radius: 7px;
+  border-radius: 30px;
 }
 
-progress::-webkit-progress-value {
+#progresoMarker::-webkit-progress-value {
   background-color: #b08441;
-  border-radius: 7px;
-  box-shadow: 1px 1px 2px 2px #142b31;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 8px 5px 0px #142b31;
+}
+.progress-point {
+  z-index: 102;
+  position: absolute;
+  top: 0px; /* Adjust based on the desired position */
+  font-size: 35px; /* Adjust size as needed */
+  color: gold; /* Adjust color as needed */
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out, bottom 0.4s ease-in-out;
+}
+
+.progress-point.show {
+  opacity: 1;
+  top: -8px; /* Ajuste para hacer el punto visible con animación */
+}
+
+.menu {
+  position: fixed;
+  top: 0%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  background-color: #ece9dd;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 30px;
+  border: 2px solid #000;
+  box-shadow: 5px 5px 0px #000;
+  transition: opacity 0.25s ease-in-out, top 0.3s ease-in-out;
+  z-index: -1;
+  opacity: 0;
+}
+
+.menu.open {
+  top: 50%;
+  opacity: 1;
+  z-index: 200;
+}
+
+.menuContenido {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+/* .btnwrap {
+  bottom: 10;
+  margin-top: 50px;
+  margin-bottom: 10px;
+} */
+
+.btnwrap {
+  position: absolute;
+  bottom: 10px; /* Ajusta según sea necesario */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between; /* Ajusta la distribución de los botones */
+  width: 100%; /* O ajusta según sea necesario */
+}
+
+.menuButton {
+  width: auto;
+  height: auto;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 2rem;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  background-color: #345364;
+  color: #ece9dd;
+  padding: 10px;
+}
+
+.menuButton:hover {
+  background-color: #b08441;
+  border: 2px solid #345364;
+  box-shadow: 5px 5px 0px #345364;
+  color: #000;
+}
+
+.menuButton:active {
+  background-color: white;
+  box-shadow: none;
+  transform: translateY(4px);
+  color: #000;
+}
+
+.lista {
+  overflow: auto;
 }
