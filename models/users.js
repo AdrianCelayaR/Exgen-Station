@@ -34,6 +34,17 @@ module.exports = (sequelize, DataTypes) => {
       users.hasMany(models.userrols, {
         foreignKey: 'userId',
       });
+
+      users.belongsToMany(models.recompensas, {
+        through: 'recompensaUsuarios', // Este es el modelo de tabla intermedia
+        foreignKey: 'userId', // Clave foránea en recompensaUsuarios que se refiere a users
+        otherKey: 'recompensaId' // Clave foránea en recompensaUsuarios que se refiere a recompensas
+      });
+
+      users.belongsToMany(models.markers, {
+        through: 'progresoUsuariomMarcadores', // Este es el modelo de tabla intermedia
+        foreignKey: 'userId', // Clave foránea en recompensaUsuarios que se refiere a users
+      });
     };
   return users;
 };
