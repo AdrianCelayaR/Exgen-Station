@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "adriancela",
+    "password": "root",
     "database": "exgen_station",
     "host": "localhost",
     "dialect": "mysql"
