@@ -165,6 +165,13 @@
   color: #000;
 }
 
-.lista {
+.img-gallery {
   overflow: auto;
+}
+
+.textImage {
+  z-index: 150;
+}
+
+.markerImage {
 }

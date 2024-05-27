@@ -76,7 +76,7 @@
           <h2 id="nombreUser">HOLA USUARIO</h2>
           <!-- LISTA DE MARCADORES ENCONTRADOS -->
           <h3>Marcadores Encontrados:</h3>
-          <ul class="lista" id="listaUser"></ul>
+          <div class="img-gallery" id="galeria"></div>
           <div class="btnwrap">
             <button class="menuButton" id="exitAR">Salir</button>
             <button class="menuButton" id="closeMenu">Cerrar</button>
@@ -88,7 +88,7 @@
     <script>
         // OBTENCIÓN DE ELEMENTOS DE UI
         var barra = document.getElementById("progresoMarker");
-        var lista = document.getElementById("listaUser");
+        var imgGallery = document.getElementById("galeria");
         var openBTN = document.getElementById("openMenu");
         var closeBTN = document.getElementById("closeMenu");
         var exitBTN = document.getElementById("exitAR");
@@ -176,11 +176,16 @@
           setTimeout(() => { progressPoint.classList.add('show'); }, 30);
         }
       
-        function updateList(value) {
-          var item = document.createElement("li");
-          item.className = "item-usuario";
+        function updateGallery(value,img) {
+          console.log(imgGallery);
+          var item = document.createElement("p");
+          item.className = "textImage";
           item.innerHTML = value;
-          lista.parentNode.appendChild(item);
+          var imgMarker = document.createElement("img");
+          imgMarker.src=img;
+          imgMarker.className="markerImage"
+          imgMarker.appendChild(item);
+          imgGallery.appendChild(imgMarker);
         }
       
         // DETECCIÓN DE MARCADORES
@@ -201,8 +206,9 @@
                 updateProgress(barra.value);
       
                 const presetValue = '<%= marker.preset %>';
-                console.log(presetValue);
-                updateList(presetValue);
+                const imagValue = '<%= marker.patt %>';
+                let pathImg =imagValue.split('.')[0]+".png";
+                updateGallery(presetValue,pathImg);
                 playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav', false);
       
                 if (<%= current_user ? true : false %>) {
@@ -260,29 +266,3 @@
     <script type="text/javascript" src="../javascripts/screenshoot.js"></script>
   </body>
 </html>
-
-<style>
-  @media (max-width: 600px) {
-    a-marker,
-    a-text,
-    a-entity {
-      scale: 0.1 0.1 0.1 !important; /* Ajuste de escala para pantallas pequeñas */
-    }
-  }
-
-  @media (min-width: 601px) and (max-width: 1200px) {
-    a-marker,
-    a-text,
-    a-entity {
-      scale: 0.1 0.1 0.1 !important; /* Ajuste de escala para pantallas medianas */
-    }
-  }
-
-  @media (min-width: 1201px) {
-    a-marker,
-    a-text,
-    a-entity {
-      scale: 1 1 1 !important; /* Ajuste de escala para pantallas grandes */
-    }
-  }
-</style>
