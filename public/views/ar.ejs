@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title><%= title %> / AR</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
@@ -52,6 +52,9 @@
     <!-- Canvas para captura de screenshots -->
     <canvas id="canvas" width="800" height="600" style="display: none"></canvas>
 
+    <!-- Fuente de sonido -->
+    <audio id="audioPlayer"></audio>
+
     <div id="actionElements">
       <div id="progesoContainer">
         <progress id="progresoMarker" value="0" max="<%= markersAndModels.length %>"></progress>
@@ -83,153 +86,175 @@
     </div>
 
     <script>
+        // OBTENCIÓN DE ELEMENTOS DE UI
+        var barra = document.getElementById("progresoMarker");
+        var lista = document.getElementById("listaUser");
+        var openBTN = document.getElementById("openMenu");
+        var closeBTN = document.getElementById("closeMenu");
+        var exitBTN = document.getElementById("exitAR");
+        var menu = document.getElementById("menu");
+        var uName = document.getElementById("nombreUser");
+        var audioMarker = document.getElementById("audioPlayer");
       
-      //OBTENCION DE ELEMENTOS DE UI
-      var barra = document.getElementById("progresoMarker");
-      var lista = document.getElementById("listaUser");
-      var openBTN= document.getElementById("openMenu");
-      var closeBTN = document.getElementById("closeMenu");
-      var exitBTN = document.getElementById("exitAR");
-      var menu= document.getElementById("menu");
-      var uName= document.getElementById("nombreUser");
-
-      //DATOS DE BD
-      const markersAndModels = <%- JSON.stringify(markersAndModels) %>;
-      const totalMarkers = markersAndModels.length;
-      let detectedMarkers = new Set();
-      const detectedMarkersSave = '<%= detectedMarkersSave %>';
-      console.log(markersAndModels)
-      let imagesMarkers = new Set();
-
-      //FUNCION PARA ACTUALIZAR LOS MARCADORES ANTERIORMENTE DETECTADOS
-      if (detectedMarkersSave.length !== 0) {
-        detectedMarkers = new Set(detectedMarkersSave.split(','));
-        detectedMarkers.forEach(function(markerId) {
-          const marker = markersAndModels.find(m => m.id === parseInt(markerId, 10));
-          if (marker) {
-            console.log(marker.patt.split('/'))
-            updateList(marker.preset);
-          }
-        });
-      }
-      let allDetected = detectedMarkers.size === totalMarkers;
-      barra.value = detectedMarkers.size;
-      console.log('Marcadores detectados:', detectedMarkers);
-
-      //DETECCION DE USUARIO
-      <% if (current_user) { %>
-        const name = '<%= current_user.fullName %>';
-        console.log(name);
-      <% } %>
+        // DATOS DE BD
+        const markersAndModels = <%- JSON.stringify(markersAndModels) %>;
+        const totalMarkers = markersAndModels.length;
+        let detectedMarkers = new Set();
+        const detectedMarkersSave = '<%= detectedMarkersSave %>';
+        let imagesMarkers = new Set();
       
-      //HANDLERS DE LOS BOTONES
-      openBTN.addEventListener("click",()=>{
-        menu.classList.add("open");
-      });
-
-      closeBTN.addEventListener("click",()=>{
-        menu.classList.remove("open");
-      });
-
-      exitBTN.addEventListener("click",()=>{
-        window.history.back();
-      });
-
-      if(name!=null){
-        uName.innerHTML="Hola "+name;
-      }
-
-      function playSound(path, loop) {
-        let audio = new Audio(path);
-        audio.loop = loop;
-        audio.play();
-      }
-
-      function updateProgress(value) {
-      // Calculate the position for each progress point
-        const starPosition = (100 / totalMarkers) * value;
-        const progressPoint = document.createElement('span');
-        progressPoint.className = 'progress-point';
-        progressPoint.style.left = `${starPosition-3}%`;
-        progressPoint.innerHTML = '&#9733;'; // Unicode for star icon or any emoji
-        barra.parentNode.appendChild(progressPoint);
-        setTimeout(() => {progressPoint.classList.add('show');}, 30);
-      }
-
-      function updateList(value){
-        var item = document.createElement("li");
-        item.className="item-usuario";
-        item.innerHTML=value;
-        lista.parentNode.appendChild(item);
-      }
-
-      <% markersAndModels.forEach(function(marker) { %>
-        const marker<%= marker.id %> = document.querySelector('#marker-<%= marker.id %>');
-        if (marker<%= marker.id %>) {
-        marker<%= marker.id %>.addEventListener('markerFound', async function() {
-        console.log('Marker <%= marker.id %> encontrado!');
-        playSound('../assets/sounds/mixkit-long-pop-2358.wav', false);
-        if('<%= marker.audio %>'){
-            console.log("<%= marker.audio %>")
-            setTimeout(() => {playSound('<%= marker.audio %>',false);}, 30);
+        console.log(markersAndModels);
+      
+        // FUNCIÓN PARA ACTUALIZAR LOS MARCADORES ANTERIORMENTE DETECTADOS
+        if (detectedMarkersSave.length !== 0) {
+          detectedMarkers = new Set(detectedMarkersSave.split(','));
+          detectedMarkers.forEach(function(markerId) {
+            const marker = markersAndModels.find(m => m.id === parseInt(markerId, 10));
+            if (marker) {
+              console.log(marker.patt.split('/'));
+              updateList(marker.preset);
+            }
+          });
         }
-        
-        if (!detectedMarkers.has('<%= marker.id %>')) {
-            detectedMarkers.add('<%= marker.id %>');
-            barra.value = detectedMarkers.size;
-            updateProgress(barra.value);
-
-            const presetValue = '<%= marker.preset %>';
-            console.log(presetValue);
-            updateList(presetValue);
-            playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav', false);
-            if (<%= current_user ? true : false %>) {
-                const userId = '<%= current_user ? current_user.id : null %>';
-                await actualizarProgreso(userId, '<%= marker.id %>');
-            } else {
-                console.log("Debes logearte");
-            }
-            }
-            if (detectedMarkers.size === totalMarkers && !allDetected) {
+        let allDetected = detectedMarkers.size === totalMarkers;
+        barra.value = detectedMarkers.size;
+        console.log('Marcadores detectados:', detectedMarkers);
+      
+        // DETECCIÓN DE USUARIO
+        <% if (current_user) { %>
+          const name = '<%= current_user.fullName %>';
+          console.log(name);
+        <% } %>
+      
+        // HANDLERS DE LOS BOTONES
+        openBTN.addEventListener("click", () => {
+          menu.classList.add("open");
+        });
+      
+        closeBTN.addEventListener("click", () => {
+          menu.classList.remove("open");
+        });
+      
+        exitBTN.addEventListener("click", () => {
+          window.history.back();
+        });
+      
+        if (name != null) {
+          uName.innerHTML = "Hola " + name;
+        }
+      
+        // FUNCIONES DE AUDIO
+        function playSound(path, loop) {
+          let audio = new Audio(path);
+          audio.loop = loop;
+          audio.play();
+        }
+      
+        function playMarkerSound(path, loop) {
+          stopMarkerSound();
+          audioMarker.src = path;
+          audioMarker.addEventListener('loadeddata', () => {
+            audioMarker.play().catch(error => {
+              console.error('Error al reproducir el audio:', error);
+            });
+          }, { once: true });
+        }
+      
+        function stopMarkerSound() {
+          audioMarker.pause();
+          audioMarker.currentTime = 0;
+        }
+      
+        // FUNCIONES DE ACTUALIZACIÓN DE UI
+        function updateProgress(value) {
+          const starPosition = (100 / totalMarkers) * value;
+          const progressPoint = document.createElement('span');
+          progressPoint.className = 'progress-point';
+          progressPoint.style.left = `${starPosition - 3}%`;
+          progressPoint.innerHTML = '&#9733;'; // Unicode for star icon or any emoji
+          barra.parentNode.appendChild(progressPoint);
+          setTimeout(() => { progressPoint.classList.add('show'); }, 30);
+        }
+      
+        function updateList(value) {
+          var item = document.createElement("li");
+          item.className = "item-usuario";
+          item.innerHTML = value;
+          lista.parentNode.appendChild(item);
+        }
+      
+        // DETECCIÓN DE MARCADORES
+        <% markersAndModels.forEach(function(marker) { %>
+          const marker<%= marker.id %> = document.querySelector('#marker-<%= marker.id %>');
+          if (marker<%= marker.id %>) {
+            marker<%= marker.id %>.addEventListener('markerFound', async function() {
+              console.log('Marker <%= marker.id %> encontrado!');
+              playSound('../assets/sounds/mixkit-long-pop-2358.wav', false);
+              if ('<%= marker.audio %>') {
+                console.log("<%= marker.audio %>");
+                setTimeout(() => { playMarkerSound('<%= marker.audio %>', false); }, 10);
+              }
+      
+              if (!detectedMarkers.has('<%= marker.id %>')) {
+                detectedMarkers.add('<%= marker.id %>');
+                barra.value = detectedMarkers.size;
+                updateProgress(barra.value);
+      
+                const presetValue = '<%= marker.preset %>';
+                console.log(presetValue);
+                updateList(presetValue);
+                playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav', false);
+      
+                if (<%= current_user ? true : false %>) {
+                  const userId = '<%= current_user ? current_user.id : null %>';
+                  await actualizarProgreso(userId, '<%= marker.id %>');
+                } else {
+                  console.log("Debes logearte");
+                }
+              }
+      
+              if (detectedMarkers.size === totalMarkers && !allDetected) {
                 console.log('Todos los marcadores han sido encontrados!');
                 playSound('../assets/sounds/mixkit-small-win-2020.wav', false);
                 allDetected = true;
-            }
+              }
             });
-
+      
             marker<%= marker.id %>.addEventListener('markerLost', function() {
-            console.log('Marker #<%= marker.id %> perdido!');
-            // audio.pause();
-            playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav', false);
-        });
-        } else {
+              console.log('Marker #<%= marker.id %> perdido!');
+              stopMarkerSound();
+              playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav', false);
+            });
+          } else {
             console.error(`Marcador no encontrado: #marker-<%= marker.id %>`);
-        }
-      <% }); %>
-
-      async function actualizarProgreso(userId, markerId) {
-        if (userId) {
+          }
+        <% }); %>
+      
+        // FUNCIÓN PARA ACTUALIZAR PROGRESO EN EL SERVIDOR
+        async function actualizarProgreso(userId, markerId) {
+          if (userId) {
             try {
-                const response = await fetch('/progreso/actualizar-progreso', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: userId, markerId: markerId })
-                });
-                const data = await response.json();
-                console.log('Progreso actualizado:', data);
-                if (data.alertaHTML) {
-                    const alertContainer = document.createElement('div');
-                    alertContainer.innerHTML = data.alertaHTML;
-                    document.body.appendChild(alertContainer);
-                }
+              const response = await fetch('/progreso/actualizar-progreso', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userId, markerId: markerId })
+              });
+              const data = await response.json();
+              console.log('Progreso actualizado:', data);
+              if (data.alertaHTML) {
+                const alertContainer = document.createElement('div');
+                alertContainer.innerHTML = data.alertaHTML;
+                document.body.appendChild(alertContainer);
+              }
             } catch (error) {
-            console.error('Error al actualizar el progreso:', error);
+              console.error('Error al actualizar el progreso:', error);
             }
+          }
         }
-      }
     </script>
+      
 
     <!-- Script de captura de pantalla -->
     <script type="text/javascript" src="../javascripts/screenshoot.js"></script>
