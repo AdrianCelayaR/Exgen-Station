@@ -76,7 +76,9 @@
           <h2 id="nombreUser">HOLA USUARIO</h2>
           <!-- LISTA DE MARCADORES ENCONTRADOS -->
           <h3>Marcadores Encontrados:</h3>
-          <div class="img-gallery" id="galeria"></div>
+          <div class="marcadores_container">
+            <div class="img-gallery" id="galeria"></div>
+          </div>
           <div class="btnwrap">
             <button class="menuButton" id="exitAR">Salir</button>
             <button class="menuButton" id="closeMenu">Cerrar</button>
@@ -111,8 +113,8 @@
           detectedMarkers.forEach(function(markerId) {
             const marker = markersAndModels.find(m => m.id === parseInt(markerId, 10));
             if (marker) {
-              console.log(marker.patt.split('/'));
-              updateList(marker.preset);
+              let pathImg =marker.patt.split('.')[0]+".png";
+                updateGallery(marker.preset,pathImg);;
             }
           });
         }

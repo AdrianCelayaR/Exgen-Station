@@ -165,7 +165,6 @@
   color: #000;
 }
 
-
 .textImage {
   z-index: 150;
 }
@@ -179,6 +178,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.marcadores_container {
+  overflow: auto;
+  width: 100%;
+  max-height: 75%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .img-gallery {
