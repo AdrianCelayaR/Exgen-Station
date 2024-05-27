@@ -6,11 +6,13 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
-
+    <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
     <link rel="stylesheet" href="../stylesheets/arScreen.css" />
   </head>
   <body style="margin: 0px; overflow: hidden">
-    <a-scene embedded arjs="sourceType: webcam;">
+    <a-scene embedded arjs="sourceType: webcam;"
+      gesture-detector
+    >
       <% markersAndModels.forEach(function(marker) { %>
       <a-marker
         id="marker-<%= marker.id %>"
@@ -31,12 +33,12 @@
         >
         </a-text>
         <a-entity
-          look-controls
           gltf-model="<%= marker.src %>"
           position="<%= marker.model_position %>"
           scale="<%= marker.model_scale %>"
           rotation="<%= marker.model_rotation %>"
           animation-mixer="<%= marker.anim_conf %>"
+          gesture-handler
         >
         </a-entity>
       </a-marker>
