@@ -47,6 +47,9 @@
     <!-- Canvas para captura de screenshots -->
     <canvas id="canvas" width="800" height="600" style="display: none"></canvas>
 
+    <!-- Fuente de sonido -->
+    <audio id="audioPlayer"></audio>
+
     <div id="actionElements">
       <div id="progesoContainer">
         <progress id="progresoMarker" value="0" max="<%= markersAndModels.length %>"></progress>
@@ -87,6 +90,7 @@
       var exitBTN = document.getElementById("exitAR");
       var menu= document.getElementById("menu");
       var uName= document.getElementById("nombreUser");
+      var audioMarker= document.getElementById("audioPlayer");
 
       //DATOS DE BD
       const markersAndModels = <%- JSON.stringify(markersAndModels) %>;
@@ -140,6 +144,21 @@
       audio.play();
       }
 
+      function playMarkerSound(path,loop){
+        stopMarkerSound();
+        audioMarker.src=path;
+        audioMarker.addEventListener('loadeddata', () => {
+          audioMarker.play().catch(error => {
+            console.error('Error al reproducir el audio:', error);
+        });
+    }, { once: true });
+      }
+
+      function stopMarkerSound() {
+        audioMarker.pause();
+        audioMarker.currentTime = 0;
+      }
+
       function updateProgress(value) {
       // Calculate the position for each progress point
       const starPosition = (100 / totalMarkers) * value;
@@ -166,7 +185,7 @@
       playSound('../assets/sounds/mixkit-long-pop-2358.wav', false);
       if('<%= marker.audio %>'){
         console.log("<%= marker.audio %>")
-        setTimeout(() => {playSound('<%= marker.audio %>',false);}, 30);
+        setTimeout(() => {playMarkerSound('<%= marker.audio %>',false);}, 10);
       }
       
       if (!detectedMarkers.has('<%= marker.id %>')) {
@@ -194,7 +213,7 @@
 
       marker<%= marker.id %>.addEventListener('markerLost', function() {
       console.log('Marker #<%= marker.id %> perdido!');
-      // audio.pause();
+      stopMarkerSound();
       playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav', false);
       });
       } else {
