@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title><%= title %> / AR</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
@@ -83,32 +83,46 @@
     </div>
 
     <script>
-      // Numero de marcadores necesarios a escanear
-      const totalMarkers = <%= markersAndModels.length %>;
-
-      <% if (currentUser) { %>
-      const name = '<%= currentUser.fullName %>';
-      console.log(name);
-      <% } %>
-
-      // TODO: obtener los marcadores escaneados de la base de datos
-      const detectedMarkers = new Set();
-      // BANDERA DE DETECTAR TODOS
-      let allDetected=false;
-
-      //Barra Progreso
-      var barra=document.getElementById("progresoMarker");
-
-      //Lista Marcadores Usuario
+      
+      //OBTENCION DE ELEMENTOS DE UI
+      var barra = document.getElementById("progresoMarker");
       var lista = document.getElementById("listaUser");
-
       var openBTN= document.getElementById("openMenu");
       var closeBTN = document.getElementById("closeMenu");
       var exitBTN = document.getElementById("exitAR");
       var menu= document.getElementById("menu");
       var uName= document.getElementById("nombreUser");
 
+      //DATOS DE BD
+      const markersAndModels = <%- JSON.stringify(markersAndModels) %>;
+      const totalMarkers = markersAndModels.length;
+      let detectedMarkers = new Set();
+      const detectedMarkersSave = '<%= detectedMarkersSave %>';
+      console.log(markersAndModels)
+      let imagesMarkers = new Set();
 
+      //FUNCION PARA ACTUALIZAR LOS MARCADORES ANTERIORMENTE DETECTADOS
+      if (detectedMarkersSave.length !== 0) {
+        detectedMarkers = new Set(detectedMarkersSave.split(','));
+        detectedMarkers.forEach(function(markerId) {
+          const marker = markersAndModels.find(m => m.id === parseInt(markerId, 10));
+          if (marker) {
+            console.log(marker.patt.split('/'))
+            updateList(marker.preset);
+          }
+        });
+      }
+      let allDetected = detectedMarkers.size === totalMarkers;
+      barra.value = detectedMarkers.size;
+      console.log('Marcadores detectados:', detectedMarkers);
+
+      //DETECCION DE USUARIO
+      <% if (current_user) { %>
+        const name = '<%= current_user.fullName %>';
+        console.log(name);
+      <% } %>
+      
+      //HANDLERS DE LOS BOTONES
       openBTN.addEventListener("click",()=>{
         menu.classList.add("open");
       });
@@ -125,15 +139,14 @@
         uName.innerHTML="Hola "+name;
       }
 
-      //REPRODUCIR AUDIO
-      function playSound(path,loop){
+      function playSound(path, loop) {
         let audio = new Audio(path);
-        audio.loop=loop;
+        audio.loop = loop;
         audio.play();
       }
 
       function updateProgress(value) {
-        // Calculate the position for each progress point
+      // Calculate the position for each progress point
         const starPosition = (100 / totalMarkers) * value;
         const progressPoint = document.createElement('span');
         progressPoint.className = 'progress-point';
@@ -152,58 +165,99 @@
 
       <% markersAndModels.forEach(function(marker) { %>
         const marker<%= marker.id %> = document.querySelector('#marker-<%= marker.id %>');
-        const text<%= marker.id %> = document.querySelector('#text-<%= marker.id %>');
-
         if (marker<%= marker.id %>) {
+        marker<%= marker.id %>.addEventListener('markerFound', async function() {
+        console.log('Marker <%= marker.id %> encontrado!');
+        playSound('../assets/sounds/mixkit-long-pop-2358.wav', false);
+        if('<%= marker.audio %>'){
+            console.log("<%= marker.audio %>")
+            setTimeout(() => {playSound('<%= marker.audio %>',false);}, 30);
+        }
+        
+        if (!detectedMarkers.has('<%= marker.id %>')) {
+            detectedMarkers.add('<%= marker.id %>');
+            barra.value = detectedMarkers.size;
+            updateProgress(barra.value);
 
-          marker<%= marker.id %>.addEventListener('markerFound', function() {
-            console.log('Marker <%= marker.id %> encontrado!');
-            playSound('../assets/sounds/mixkit-long-pop-2358.wav',false)
-            console.log("barra "+barra.value)
-            // var strings=text<%= marker.id %>.getAttribute("value").split(" ");
-
-            // Añadir marcador a la lista
-            if (!detectedMarkers.has('<%= marker.id %>')) {
-              detectedMarkers.add('<%= marker.id %>');
-              console.log(detectedMarkers.size);
-              barra.value=detectedMarkers.size;
-              updateProgress(barra.value);
-
-              const presetValue = '<%= marker.preset %>';
-              console.log(presetValue);
-              updateList(presetValue);
-              playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav',false)
+            const presetValue = '<%= marker.preset %>';
+            console.log(presetValue);
+            updateList(presetValue);
+            playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav', false);
+            if (<%= current_user ? true : false %>) {
+                const userId = '<%= current_user ? current_user.id : null %>';
+                await actualizarProgreso(userId, '<%= marker.id %>');
+            } else {
+                console.log("Debes logearte");
             }
-
-            //Lista de marcadores escaneados
-            //TODO: Actualizar lista de marcadores encontrados en la base de datos
-            console.log('Lista de marcadores:', Array.from(detectedMarkers));
-
-            // Revisión de lista completa
-            if (detectedMarkers.size === totalMarkers) {
-
-              console.log('Todos los marcadores han sido encontrados!');
-              if(!allDetected){
-                playSound('../assets/sounds/mixkit-small-win-2020.wav',false)
-                // setTimeout(function() {
-                //   window.open('https://www.google.com', '_blank');
-                // }, 2000); // Retraso de 2000 milisegundos (2 segundos)
-              }
-              allDetected=true
             }
-          });
-          marker<%= marker.id %>.addEventListener('markerLost', function() {
+            if (detectedMarkers.size === totalMarkers && !allDetected) {
+                console.log('Todos los marcadores han sido encontrados!');
+                playSound('../assets/sounds/mixkit-small-win-2020.wav', false);
+                allDetected = true;
+            }
+            });
+
+            marker<%= marker.id %>.addEventListener('markerLost', function() {
             console.log('Marker #<%= marker.id %> perdido!');
-            playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav',false)
-
-          });
+            // audio.pause();
+            playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav', false);
+        });
         } else {
-          console.error(`Marcador no encontrado: #marker-<%= marker.id %>`);
+            console.error(`Marcador no encontrado: #marker-<%= marker.id %>`);
         }
       <% }); %>
+
+      async function actualizarProgreso(userId, markerId) {
+        if (userId) {
+            try {
+                const response = await fetch('/progreso/actualizar-progreso', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: userId, markerId: markerId })
+                });
+                const data = await response.json();
+                console.log('Progreso actualizado:', data);
+                if (data.alertaHTML) {
+                    const alertContainer = document.createElement('div');
+                    alertContainer.innerHTML = data.alertaHTML;
+                    document.body.appendChild(alertContainer);
+                }
+            } catch (error) {
+            console.error('Error al actualizar el progreso:', error);
+            }
+        }
+      }
     </script>
 
     <!-- Script de captura de pantalla -->
     <script type="text/javascript" src="../javascripts/screenshoot.js"></script>
   </body>
 </html>
+
+<style>
+  @media (max-width: 600px) {
+    a-marker,
+    a-text,
+    a-entity {
+      scale: 0.1 0.1 0.1 !important; /* Ajuste de escala para pantallas pequeñas */
+    }
+  }
+
+  @media (min-width: 601px) and (max-width: 1200px) {
+    a-marker,
+    a-text,
+    a-entity {
+      scale: 0.1 0.1 0.1 !important; /* Ajuste de escala para pantallas medianas */
+    }
+  }
+
+  @media (min-width: 1201px) {
+    a-marker,
+    a-text,
+    a-entity {
+      scale: 1 1 1 !important; /* Ajuste de escala para pantallas grandes */
+    }
+  }
+</style>

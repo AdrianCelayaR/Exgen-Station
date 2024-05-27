@@ -54,37 +54,52 @@ router.get("/contact", function (req, res, next) {
   res.render(path.join(__dirname, "../public/views/contact"), { title: "Exgen Station" });
 });
 
-router.get("/arcam", async function (req, res, next) {
+
+
+router.get('/arcam', async function(req, res, next) {
   const markersAndModels = await models.markers.findAll({
-    where: {
-      activo: true,
-    },
+      where: {
+          activo: true
+      }
   });
-
   const cookieJWT = req.cookies["jwt"];
+  let current_user = null;
+  let detectedMarkers = [];
+  let cantidadProgreso = 0;
 
-  if (!cookieJWT) {
-    return res.render(path.join(__dirname, "../public/views/ar"), {
-      title: "Exgen Station",
-      markersAndModels: markersAndModels,
-      currentUser: null,
-    });
+  if (cookieJWT) {
+      const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+      const user_rol = await models.userrols.findOne({
+          where: {
+              userId: decoded.id
+          }
+      });
+      current_user = await models.users.findOne({
+          include: models.userrols,
+          where: {
+              id: decoded.id
+          }
+      });
+
+      // Obtener todos los marcadores detectados por el usuario
+      const progresoUsuario = await models.progresoUsuariomMarcadores.findAll({
+          where: { userId: decoded.id }
+      });
+      cantidadProgreso = progresoUsuario.length;
+      detectedMarkers = progresoUsuario.map(progreso => progreso.markerId);
+      console.log("---------------------",current_user);
+      console.log("---------------------",cantidadProgreso);
+      console.log("---------------------",detectedMarkers);
   }
-
-  const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
-  const current_user = await models.users.findOne({
-    include: models.userrols,
-    where: {
-      id: decoded.id,
-    },
-  });
   // Convertir currentUser a JSON y pasarlo a la plantilla
   const currentUserJSON = JSON.stringify(current_user);
   console.log(currentUserJSON);
-  res.render(path.join(__dirname, "../public/views/ar"), {
-    title: "Exgen Station",
-    markersAndModels: markersAndModels,
-    currentUser: current_user,
+  res.render(path.join(__dirname, '../public/views/ar'), { 
+      title: 'Exgen Station', 
+      current_user: current_user, 
+      progreso: cantidadProgreso, 
+      markersAndModels: markersAndModels, 
+      detectedMarkersSave: detectedMarkers
   });
 });
 module.exports = router;
