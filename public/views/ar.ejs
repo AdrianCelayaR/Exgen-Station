@@ -74,11 +74,18 @@
         <div class="menuContenido">
           <img src="../images/th1.jpeg" width="75" height="75" />
           <h2 id="nombreUser">HOLA USUARIO</h2>
+
+          <h3>Recompensas Obetnidas:</h3>
+          <div class="recompensas_container">
+            <div class="recompensas_list" id="rlist"></div>
+          </div>
+          
           <!-- LISTA DE MARCADORES ENCONTRADOS -->
           <h3>Marcadores Encontrados:</h3>
           <div class="marcadores_container">
             <div class="img-gallery" id="galeria"></div>
           </div>
+          
           <div class="btnwrap">
             <button class="menuButton" id="exitAR">Salir</button>
             <button class="menuButton" id="closeMenu">Cerrar</button>
@@ -97,15 +104,20 @@
         var menu = document.getElementById("menu");
         var uName = document.getElementById("nombreUser");
         var audioMarker = document.getElementById("audioPlayer");
+        var recoList = document.getElementById("rlist");
       
         // DATOS DE BD
         const markersAndModels = <%- JSON.stringify(markersAndModels) %>;
+        const recompensasDB = <%- JSON.stringify(recompensas) %>;
         const totalMarkers = markersAndModels.length;
         let detectedMarkers = new Set();
         const detectedMarkersSave = '<%= detectedMarkersSave %>';
         let imagesMarkers = new Set();
+        const recompensasUser = <%- JSON.stringify(recompensasUser) %>;
       
         console.log(markersAndModels);
+        console.log(recompensasDB)
+        console.log(recompensasUser)
       
         // FUNCIÓN PARA ACTUALIZAR LOS MARCADORES ANTERIORMENTE DETECTADOS
         if (detectedMarkersSave.length !== 0) {
@@ -117,6 +129,16 @@
                 updateGallery(marker.preset,pathImg);;
             }
           });
+        }
+
+        if(recompensasUser && recompensasUser.length!=0){
+          console.log("!!!!!!!")
+          recompensasUser.forEach(function(recoId){
+            const reco = recompensasDB.find(r => r.id === parseInt(recoId.recompensaId,10));
+            if(reco){
+              updateList(reco);
+            }
+          })
         }
         let allDetected = detectedMarkers.size === totalMarkers;
         barra.value = detectedMarkers.size;
@@ -189,6 +211,17 @@
           imgMarker.appendChild(item);
           imgGallery.appendChild(imgMarker);
         }
+
+        function updateList(recompensa){
+          var title = document.createElement("p");
+          var desc = document.createElement("p");
+          title.innerHTML=recompensa.recompensa
+          desc.innerHTML=recompensa.descripcion
+          title.className="titleReco"
+          desc.className="descReco"
+          title.appendChild(desc);
+          recoList.appendChild(title)
+        }
       
         // DETECCIÓN DE MARCADORES
         <% markersAndModels.forEach(function(marker) { %>
@@ -255,6 +288,9 @@
                 const alertContainer = document.createElement('div');
                 alertContainer.innerHTML = data.alertaHTML;
                 document.body.appendChild(alertContainer);
+              }
+              if(data.recompensa){
+                updateList(data.recompensa)
               }
             } catch (error) {
               console.error('Error al actualizar el progreso:', error);

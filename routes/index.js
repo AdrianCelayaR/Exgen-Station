@@ -7,13 +7,13 @@ var router = express.Router();
 
 /* GET home page. */
 router.get("/", async function (req, res, next) {
-  alerta = req.flash('alert');
-  notice = req.flash('notice');
+  alerta = req.flash("alert");
+  notice = req.flash("notice");
   if (alerta.length === 0) {
-      alerta = null;
+    alerta = null;
   }
   if (notice.length === 0) {
-      notice = null;
+    notice = null;
   }
   const cookieJWT = req.cookies["jwt"];
   if (!cookieJWT) {
@@ -67,52 +67,63 @@ router.get("/contact", function (req, res, next) {
   res.render(path.join(__dirname, "../public/views/contact"), { title: "Exgen Station" });
 });
 
-
-
-router.get('/arcam', async function(req, res, next) {
+router.get("/arcam", async function (req, res, next) {
   const markersAndModels = await models.markers.findAll({
-      where: {
-          activo: true
-      }
+    where: {
+      activo: true,
+    },
   });
+  const recompensas = await models.recompensas.findAll();
   const cookieJWT = req.cookies["jwt"];
   let current_user = null;
   let detectedMarkers = [];
   let cantidadProgreso = 0;
+  let recompensasUser = [];
 
   if (cookieJWT) {
-      const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
-      const user_rol = await models.userrols.findOne({
-          where: {
-              userId: decoded.id
-          }
+    const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+    const user_rol = await models.userrols.findOne({
+      where: {
+        userId: decoded.id,
+      },
+    });
+    current_user = await models.users.findOne({
+      include: models.userrols,
+      where: {
+        id: decoded.id,
+      },
+    });
+    if (current_user) {
+      recompensasUser = await models.recompensaUsuarios.findAll({
+        where: {
+          userId: decoded.id,
+        },
       });
-      current_user = await models.users.findOne({
-          include: models.userrols,
-          where: {
-              id: decoded.id
-          }
-      });
+      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      console.log(recompensasUser);
+    }
 
-      // Obtener todos los marcadores detectados por el usuario
-      const progresoUsuario = await models.progresoUsuariomMarcadores.findAll({
-          where: { userId: decoded.id }
-      });
-      cantidadProgreso = progresoUsuario.length;
-      detectedMarkers = progresoUsuario.map(progreso => progreso.markerId);
-      console.log("---------------------",current_user);
-      console.log("---------------------",cantidadProgreso);
-      console.log("---------------------",detectedMarkers);
+    // Obtener todos los marcadores detectados por el usuario
+    const progresoUsuario = await models.progresoUsuariomMarcadores.findAll({
+      where: { userId: decoded.id },
+    });
+    cantidadProgreso = progresoUsuario.length;
+    detectedMarkers = progresoUsuario.map((progreso) => progreso.markerId);
+    console.log("---------------------", current_user);
+    console.log("---------------------", cantidadProgreso);
+    console.log("---------------------", detectedMarkers);
   }
   // Convertir currentUser a JSON y pasarlo a la plantilla
   const currentUserJSON = JSON.stringify(current_user);
   console.log(currentUserJSON);
-  res.render(path.join(__dirname, '../public/views/ar'), { 
-      title: 'Exgen Station', 
-      current_user: current_user, 
-      progreso: cantidadProgreso, 
-      markersAndModels: markersAndModels, 
-      detectedMarkersSave: detectedMarkers
+  res.render(path.join(__dirname, "../public/views/ar"), {
+    title: "Exgen Station",
+    current_user: current_user,
+    progreso: cantidadProgreso,
+    markersAndModels: markersAndModels,
+    detectedMarkersSave: detectedMarkers,
+    recompensasUser: recompensasUser,
+    recompensas: recompensas,
   });
 });
 module.exports = router;
