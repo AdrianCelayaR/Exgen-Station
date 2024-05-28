@@ -41,9 +41,12 @@
                         <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="Password Confirm" required>
                         <small id="confirmPasswordHelp" class="form-text " style="color: rgb(245, 117, 142);"></small>
                     </div>
-                
+                    <label style="color:#ECE9DD">
+                        <input type="checkbox" id="termsCheckbox">
+                        Estoy de acuerdo con las políticas y restricciones al utilizar el app AR.
+                    </label>
                     <div class="btn-group">
-                        <button type="submit" class="btn-submit">Registrar</button>
+                        <button type="submit" class="btn-submit" id="btn-register-submit">Registrar</button>
                     </div>
                     <p>¿Ya estás registrado? - <a href="/auth/login">Iniciar sesión</a></p>
                     <div class="btn-group">
@@ -57,6 +60,24 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const checkbox = document.getElementById("termsCheckbox");
+            const btnRegister = document.getElementById("btn-register-submit");
+
+            checkbox.onchange = function() {
+                console.log("Cambiando");
+                btnRegister.disabled = !checkbox.checked;
+                if (btnRegister.disabled) {
+                    btnRegister.style.opacity = "0.5";
+                } else {
+                    btnRegister.style.opacity = "1";
+                }
+            }
+
+            btnRegister.disabled = true;
+            btnRegister.style.opacity = "0.5";
+        });
+
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('passwordConfirm');
         const passwordHelp = document.getElementById('passwordHelp');
@@ -84,6 +105,9 @@
             }
             
         }
+
+
+        
     </script>
 </body>
 </html>
