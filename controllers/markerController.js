@@ -14,8 +14,11 @@ exports.getAll = async (req, res) => {
     if (notice.length === 0) {
         notice = null;
     }
+    console.log("_____________________________________________");
+    current_user_rol = await get_current_user_rol(req);
+    console.log(current_user_rol.roleId);
     await models.markers.findAll().then(markers => {
-        res.render(path.join(__dirname, '../public/views/markers/index'), {markers: markers, notice: notice, alert: alerta});
+        res.render(path.join(__dirname, '../public/views/markers/index'), {markers: markers, notice: notice, alert: alerta, current_user_rol: current_user_rol});
         // res.sendFile(path.join(__dirname, '../public/views/Users/index.html'), { users: users });
     }).catch(err => {
         res.status(500).send({ message: err.message });
@@ -287,3 +290,18 @@ exports.delete = async (req, res) => {
         res.redirect('/markers');
     });
 };
+
+async function get_current_user_rol(req) {
+    try {
+        const cookieJWT = req.cookies["jwt"];
+        const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+        const user_rol =  await models.userrols.findOne({
+            where: {
+                userId: decoded.id
+            }
+        });
+        return user_rol;
+    } catch (error) {
+        return null;
+    }
+}

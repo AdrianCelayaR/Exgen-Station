@@ -7,6 +7,14 @@ var router = express.Router();
 
 /* GET home page. */
 router.get("/", async function (req, res, next) {
+  alerta = req.flash('alert');
+  notice = req.flash('notice');
+  if (alerta.length === 0) {
+      alerta = null;
+  }
+  if (notice.length === 0) {
+      notice = null;
+  }
   const cookieJWT = req.cookies["jwt"];
   if (!cookieJWT) {
     return res.render(path.join(__dirname, "../public/views/index"), {
@@ -38,11 +46,16 @@ router.get("/", async function (req, res, next) {
   if (user_rol.roleId === 1) {
     rol = "admin";
   }
+  if (user_rol.roleId === 2) {
+    rol = "diseñador";
+  }
 
   res.render(path.join(__dirname, "../public/views/index"), {
     title: "Exgen Station",
     current_user: current_user,
     rol: rol,
+    notice: notice,
+    alert: alerta,
   });
 });
 

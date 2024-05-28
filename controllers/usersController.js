@@ -14,8 +14,11 @@ exports.getAll = async (req, res) => {
         notice = null;
     }
     roles = await models.rols.findAll();
+    console.log("_____________________________________________");
+    current_user_rol = await get_current_user_rol(req);
+    console.log(current_user_rol.roleId);
     await models.users.findAll({include: models.userrols}).then(users => {
-        res.render(path.join(__dirname, '../public/views/Users/index'), { users: users, roles: roles, notice: notice, alert: alerta});
+        res.render(path.join(__dirname, '../public/views/Users/index'), { users: users, roles: roles, notice: notice, alert: alerta, current_user_rol: current_user_rol});
         // res.sendFile(path.join(__dirname, '../public/views/Users/index.html'), { users: users });
     }).catch(err => {
         res.status(500).send({ message: err.message });
@@ -197,4 +200,34 @@ exports.delete = async (req, res) => {
         req.flash('alert', err.message);
         res.redirect('/users');
     });
+}
+
+function get_current_user(req) {
+    try {
+        const cookieJWT = req.cookies["jwt"];
+        const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+        const current_user = models.users.findOne({
+            where: {
+                id: decoded.id
+            }
+        });
+        return current_user;
+    } catch (error) {
+        return null;
+    }
+}
+
+async function get_current_user_rol(req) {
+    try {
+        const cookieJWT = req.cookies["jwt"];
+        const decoded = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
+        const user_rol =  await models.userrols.findOne({
+            where: {
+                userId: decoded.id
+            }
+        });
+        return user_rol;
+    } catch (error) {
+        return null;
+    }
 }

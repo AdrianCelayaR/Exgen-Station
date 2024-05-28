@@ -29,30 +29,26 @@
         </li>
 
         <ul class="menu-links">
-          <li class="">
-            <a href="/users" title="Usuarios" >
-              <i class='bx bx-user icon'></i>
-              <span class="text nav-text">Usuarios</span>
-            </a>
-          </li>
+          <% if (current_user_rol.roleId == 1) { %>
+            <li class="">
+              <a href="/users" title="Usuarios" >
+                <i class='bx bx-user icon'></i>
+                <span class="text nav-text">Usuarios</span>
+              </a>
+            </li>
+          <% } %>
 
           <li class="">
-            <a href="/markers">
-              <i class='bx bx-qr icon'></i>
+            <a href="/markers" title="Marcadores" >
+              <i class='fa fa-qrcode icon'></i>
               <span class="text nav-text">Markers</span>
             </a>
           </li>
 
-          <li class="" style="display: grid; place-items: center;">
-            <a href="/markers" style="display: grid; grid-template-columns: 43px 1fr; padding-left: 18px;">
-              <i class='fa fa-qrcode'></i>
-              <span class="text nav-text">Markers</span>
-            </a>
-          </li>
 
-          <li class="" style="display: grid; place-items: center;">
-            <a href="/recompensas" style="display: grid; grid-template-columns: 43px 1fr; padding-left: 18px;">
-              <i class='fas fa-award'></i>
+          <li class="">
+            <a href="/recompensas" title="Recompensas">
+              <i class='fas fa-award icon'></i>
               <span class="text nav-text">Recompensas</span>
             </a>
           </li>

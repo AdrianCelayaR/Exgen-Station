@@ -34,13 +34,13 @@ const storage = multer.diskStorage({
   
 const upload = multer({ storage: storage });
 
-router.get('/', authorization.vistaAdmin, markerController.getAll);
-router.get('/new', authorization.vistaAdmin, markerController.new);
-router.post('/create', authorization.vistaAdmin, upload.fields([{ name: 'file', maxCount: 1 }, { name: 'glb', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), markerController.create);
-router.post('/save-patt', authorization.vistaAdmin, markerController.save_pattern);
-router.get('/edit/:id', authorization.vistaAdmin, markerController.edit);
-router.post('/update', authorization.vistaAdmin, upload.fields([{ name: 'file', maxCount: 1 }, { name: 'glb', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), markerController.update);
-router.get('/delete/:id', authorization.vistaAdmin, markerController.delete);
+router.get('/', authorization.vistaDesigner, markerController.getAll);
+router.get('/new', authorization.vistaDesigner, markerController.new);
+router.post('/create', authorization.vistaDesigner, upload.fields([{ name: 'file', maxCount: 1 }, { name: 'glb', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), markerController.create);
+router.post('/save-patt', authorization.vistaDesigner, markerController.save_pattern);
+router.get('/edit/:id', authorization.vistaDesigner, markerController.edit);
+router.post('/update', authorization.vistaDesigner, upload.fields([{ name: 'file', maxCount: 1 }, { name: 'glb', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), markerController.update);
+router.get('/delete/:id', authorization.vistaDesigner, markerController.delete);
 
 
 module.exports = router;
