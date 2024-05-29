@@ -2,11 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact Page</title>
     <%- include('../partials/head') %>
+    
   </head>
   <body>
-    <%- include("../partials/navigation") %>
 
     <div class="container vh-100 d-flex justify-content-center align-items-center">
         <div class="card animated flipInY bg-dark p-3 border-secondary">
@@ -29,12 +31,18 @@
                   placeholder="Message"
                 ></textarea>
               </div>
-              <button class="btn btn-primary btn-block">Save</button>
+              <button class="btn btn-primary btn-block">Send</button>
             </form>
+            <button class="btn btn-primary btn-block" id="closeMenu">Close</button>
           </div>
         </div>
     </div>
-
-    <%- include("../partials/footer") %>
   </body>
+  <script>
+    var closeBTN = document.getElementById("closeMenu");
+    closeBTN.addEventListener("click", () => {
+            window.history.back();
+          });
+  </script>
 </html>
+

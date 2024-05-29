@@ -9,7 +9,6 @@
   </head>
   <body>
     <!-- HEADER -->
-    <%- include("../partials/navigation") %>
 
     <!-- My Content -->
     <main
@@ -25,7 +24,15 @@
           experiencia de visita a otro nivel. 
 
         </p>
+        <button class="btn btn-primary btn-block" id="closeMenu">Close</button>
       </section>
     </main>
   </body>
+  <script>
+    var closeBTN = document.getElementById("closeMenu");
+    closeBTN.addEventListener("click", () => {
+            window.history.back();
+          });
+  </script>
 </html>
+
