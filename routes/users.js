@@ -2,14 +2,14 @@ var express = require('express');
 var router = express.Router();
 var path = require('node:path');
 const userController = require('../controllers/usersController');
+const authorization = require('../middlewares/authorization');
 
-
-/* GET users listing. */
-// router.get('/', function(req, res, next) {
-//   // Asegúrate de proporcionar la ruta absoluta al archivo HTML
-//   res.sendFile(path.join(__dirname, '../public/views/Users/index.html'));
-// });
-router.get('/', userController.getAllUsers);
+router.get('/', authorization.vistaAdmin, userController.getAll);
+router.get('/new', authorization.vistaAdmin, userController.new);
+router.post('/create', authorization.vistaAdmin, userController.create);
+router.get('/edit/:id', authorization.vistaAdmin, userController.edit);
+router.post('/update', authorization.vistaAdmin, userController.update);
+router.get('/delete/:id', authorization.vistaAdmin, userController.delete);
 
 
 module.exports = router;

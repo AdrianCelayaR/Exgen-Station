@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= title %> / AR</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://rawgit.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
+    <link rel="stylesheet" href="../stylesheets/arScreen.css" />
+  </head>
+  <body style="margin: 0px; overflow: hidden">
+    <a-scene embedded arjs="sourceType: webcam;"
+      gesture-detector
+    >
+      <% markersAndModels.forEach(function(marker) { %>
+      <a-marker
+        id="marker-<%= marker.id %>"
+        preset="<%= marker.preset %>"
+        type="pattern"
+        url="<%= marker.patt %>"
+        position="<%= marker.marker_position %>"
+        scale="<%= marker.marker_scale %>"
+        rotation="<%= marker.marker_rotation %>"
+      >
+        <a-text
+          id="text-<%= marker.id %>"
+          value="<%= marker.text_data %>"
+          color="<%= marker.text_color %>"
+          position="<%= marker.text_position %>"
+          rotation="<%= marker.text_rotation %>"
+          scale="<%= marker.text_scale %>"
+        >
+        </a-text>
+        <a-entity
+          gltf-model="<%= marker.src %>"
+          position="<%= marker.model_position %>"
+          scale="<%= marker.model_scale %>"
+          rotation="<%= marker.model_rotation %>"
+          animation-mixer="<%= marker.anim_conf %>"
+          gesture-handler
+          look-controls
+        >
+        </a-entity>
+      </a-marker>
+      <% }); %>
+      <a-entity camera> </a-entity>
+    </a-scene>
+
+    <!-- Fuente de video -->
+    <video id="webcam" autoplay style="display: none"></video>
+    <!-- Canvas para captura de screenshots -->
+    <canvas id="canvas" width="800" height="600" style="display: none"></canvas>
+
+    <!-- Fuente de sonido -->
+    <audio id="audioPlayer"></audio>
+
+    <div id="actionElements">
+      <div id="progesoContainer">
+        <progress id="progresoMarker" value="0" max="<%= markersAndModels.length %>"></progress>
+      </div>
+
+      <!-- BOTON SCREENSHOT -->
+      <button class="arButton" id="takeScreenshot">
+        <img src="../images/icons/photo-camera (2).png" width="75" height="75" />
+      </button>
+
+      <!-- MENU INFORMACION -->
+      <button class="arButton" id="openMenu">
+        <img src="../images/icons/info.png" width="75" height="75" />
+      </button>
+
+      <div class="menu" id="menu">
+        <div class="menuContenido">
+          <img src="../images/bazar.png" width="90" height="90" />
+          <h2 id="nombreUser">HOLA USUARIO</h2>
+
+          <h3>Recompensas Obetnidas:</h3>
+          <div class="recompensas_container">
+            <div class="recompensas_list" id="rlist"></div>
+          </div>
+
+          <!-- LISTA DE MARCADORES ENCONTRADOS -->
+          <h3>Marcadores Encontrados:</h3>
+          <div class="marcadores_container">
+            <div class="img-gallery" id="galeria"></div>
+          </div>
+          
+          <div class="btnwrap">
+            <button class="menuButton" id="exitAR">Salir</button>
+            <button class="menuButton" id="closeMenu">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        // OBTENCIÓN DE ELEMENTOS DE UI
+        var barra = document.getElementById("progresoMarker");
+        var imgGallery = document.getElementById("galeria");
+        var openBTN = document.getElementById("openMenu");
+        var closeBTN = document.getElementById("closeMenu");
+        var exitBTN = document.getElementById("exitAR");
+        var menu = document.getElementById("menu");
+        var uName = document.getElementById("nombreUser");
+        var audioMarker = document.getElementById("audioPlayer");
+        var recoList = document.getElementById("rlist");
+      
+        // DATOS DE BD
+        const markersAndModels = <%- JSON.stringify(markersAndModels) %>;
+        const recompensasDB = <%- JSON.stringify(recompensas) %>;
+        const totalMarkers = markersAndModels.length;
+        let detectedMarkers = new Set();
+        const detectedMarkersSave = '<%= detectedMarkersSave %>';
+        let imagesMarkers = new Set();
+        const recompensasUser = <%- JSON.stringify(recompensasUser) %>;
+      
+        console.log(markersAndModels);
+        console.log(recompensasDB)
+        console.log(recompensasUser)
+      
+        // FUNCIÓN PARA ACTUALIZAR LOS MARCADORES ANTERIORMENTE DETECTADOS
+        if (detectedMarkersSave.length !== 0) {
+          detectedMarkers = new Set(detectedMarkersSave.split(','));
+          detectedMarkers.forEach(function(markerId) {
+            const marker = markersAndModels.find(m => m.id === parseInt(markerId, 10));
+            if (marker) {
+              let pathImg =marker.patt.split('.')[0]+".png";
+                updateGallery(marker.preset,pathImg);;
+            }
+          });
+        }
+
+        if(recompensasUser && recompensasUser.length!=0){
+          console.log("!!!!!!!")
+          recompensasUser.forEach(function(recoId){
+            const reco = recompensasDB.find(r => r.id === parseInt(recoId.recompensaId,10));
+            if(reco){
+              updateList(reco);
+            }
+          })
+        }
+        let allDetected = detectedMarkers.size === totalMarkers;
+        barra.value = detectedMarkers.size;
+        console.log('Marcadores detectados:', detectedMarkers);
+      
+        // DETECCIÓN DE USUARIO
+        <% if (current_user) { %>
+          const name = '<%= current_user.fullName %>';
+          console.log(name);
+        <% } %>
+      
+        // HANDLERS DE LOS BOTONES
+        openBTN.addEventListener("click", () => {
+          menu.classList.add("open");
+        });
+      
+        closeBTN.addEventListener("click", () => {
+          menu.classList.remove("open");
+        });
+      
+        exitBTN.addEventListener("click", () => {
+          window.history.back();
+        });
+      
+        if (name != null) {
+          uName.innerHTML = "Hola " + name;
+        }
+      
+        // FUNCIONES DE AUDIO
+        function playSound(path, loop) {
+          let audio = new Audio(path);
+          audio.loop = loop;
+          audio.play();
+        }
+      
+        function playMarkerSound(path, loop) {
+          stopMarkerSound();
+          audioMarker.src = path;
+          audioMarker.addEventListener('loadeddata', () => {
+            audioMarker.play().catch(error => {
+              console.error('Error al reproducir el audio:', error);
+            });
+          }, { once: true });
+        }
+      
+        function stopMarkerSound() {
+          audioMarker.pause();
+          audioMarker.currentTime = 0;
+        }
+      
+        // FUNCIONES DE ACTUALIZACIÓN DE UI
+        function updateProgress(value) {
+          const starPosition = (100 / totalMarkers) * value;
+          const progressPoint = document.createElement('span');
+          progressPoint.className = 'progress-point';
+          progressPoint.style.left = `${starPosition - 3}%`;
+          progressPoint.innerHTML = '&#9733;'; // Unicode for star icon or any emoji
+          barra.parentNode.appendChild(progressPoint);
+          setTimeout(() => { progressPoint.classList.add('show'); }, 30);
+        }
+      
+        function updateGallery(value,img) {
+          console.log(imgGallery);
+          var item = document.createElement("p");
+          item.className = "textImage";
+          item.innerHTML = value;
+          var imgMarker = document.createElement("img");
+          imgMarker.src=img;
+          imgMarker.className="markerImage"
+          imgMarker.appendChild(item);
+          imgGallery.appendChild(imgMarker);
+        }
+
+        function updateList(recompensa){
+          var title = document.createElement("p");
+          var desc = document.createElement("p");
+          title.innerHTML=recompensa.recompensa
+          desc.innerHTML=recompensa.descripcion
+          title.className="titleReco"
+          desc.className="descReco"
+          title.appendChild(desc);
+          recoList.appendChild(title)
+        }
+      
+        // DETECCIÓN DE MARCADORES
+        <% markersAndModels.forEach(function(marker) { %>
+          const marker<%= marker.id %> = document.querySelector('#marker-<%= marker.id %>');
+          if (marker<%= marker.id %>) {
+            marker<%= marker.id %>.addEventListener('markerFound', async function() {
+              console.log('Marker <%= marker.id %> encontrado!');
+              playSound('../assets/sounds/mixkit-long-pop-2358.wav', false);
+              if ('<%= marker.audio %>') {
+                console.log("<%= marker.audio %>");
+                setTimeout(() => { playMarkerSound('<%= marker.audio %>', false); }, 10);
+              }
+      
+              if (!detectedMarkers.has('<%= marker.id %>')) {
+                detectedMarkers.add('<%= marker.id %>');
+                barra.value = detectedMarkers.size;
+                updateProgress(barra.value);
+      
+                const presetValue = '<%= marker.preset %>';
+                const imagValue = '<%= marker.patt %>';
+                let pathImg =imagValue.split('.')[0]+".png";
+                updateGallery(presetValue,pathImg);
+                playSound('../assets/sounds/mixkit-bonus-earned-in-video-game-2058.wav', false);
+      
+                if (<%= current_user ? true : false %>) {
+                  const userId = '<%= current_user ? current_user.id : null %>';
+                  await actualizarProgreso(userId, '<%= marker.id %>');
+                } else {
+                  console.log("Debes logearte");
+                }
+              }
+      
+              if (detectedMarkers.size === totalMarkers && !allDetected) {
+                console.log('Todos los marcadores han sido encontrados!');
+                playSound('../assets/sounds/mixkit-small-win-2020.wav', false);
+                allDetected = true;
+              }
+            });
+      
+            marker<%= marker.id %>.addEventListener('markerLost', function() {
+              console.log('Marker #<%= marker.id %> perdido!');
+              stopMarkerSound();
+              playSound('../assets/sounds/mixkit-dry-pop-up-notification-alert-2356.wav', false);
+            });
+          } else {
+            console.error(`Marcador no encontrado: #marker-<%= marker.id %>`);
+          }
+        <% }); %>
+      
+        // FUNCIÓN PARA ACTUALIZAR PROGRESO EN EL SERVIDOR
+        async function actualizarProgreso(userId, markerId) {
+          if (userId) {
+            try {
+              const response = await fetch('/progreso/actualizar-progreso', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userId, markerId: markerId })
+              });
+              const data = await response.json();
+              console.log('Progreso actualizado:', data);
+              if (data.alertaHTML) {
+                const alertContainer = document.createElement('div');
+                alertContainer.innerHTML = data.alertaHTML;
+                document.body.appendChild(alertContainer);
+              }
+              if(data.recompensa){
+                updateList(data.recompensa)
+              }
+            } catch (error) {
+              console.error('Error al actualizar el progreso:', error);
+            }
+          }
+        }
+    </script>
+      
+
+    <!-- Script de captura de pantalla -->
+    <script type="text/javascript" src="../javascripts/screenshoot.js"></script>
+  </body>
+</html>

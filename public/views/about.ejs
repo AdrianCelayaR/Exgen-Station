@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <%- include('../partials/head') %>
+  </head>
+  <body>
+    <!-- HEADER -->
+
+    <!-- My Content -->
+    <main
+      class="container pt-2 text-center d-flex justify-content-center align-items-center vh-100"
+    >
+      <section>
+        <h1 class="display-1">Descubre más sobre nosotros</h1>
+
+        <p>
+          
+          Nuestro proyecto, StacionAR, consiste en una aplicación web
+          de realidad aumentada interactiva que te permite llevar tu 
+          experiencia de visita a otro nivel. 
+
+        </p>
+        <button class="btn btn-primary btn-block" id="closeMenu">Close</button>
+      </section>
+    </main>
+  </body>
+  <script>
+    var closeBTN = document.getElementById("closeMenu");
+    closeBTN.addEventListener("click", () => {
+            window.history.back();
+          });
+  </script>
+</html>
+

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <title><%= title %></title>
+</head>
+<body class=" w3-animate-opacity ">
+    <% if (typeof notice !== 'undefined' && notice) { %>
+        <div class="alert alert-success" role="notice"><%= notice %></div>
+    <% } %>
+    <% if (typeof alert !== 'undefined' && alert) { %>
+        <div class="alert alert-danger" role="alert"><%= alert %></div>
+    <% } %>
+    <div class="container">
+        <div class="carta">
+            <h1>Login</h1>
+            <div class="carta-body">
+                <form action="/auth/register" method="POST" onsubmit="return validateForm()">
+                    <div class="form-group">
+                        <label class="form-label" for="fullName"  style="color: #ECE9DD;">Nombre:</label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="userName"  style="color: #ECE9DD;">Usuario:</label>
+                        <input type="text" class="form-control" id="userName" name="userName" placeholder="User Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email"  style="color: #ECE9DD;">Correo</label>
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password" style="color: #ECE9DD;">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Debe contener al menos un número, una letra mayúscula, una letra minúscula y tener 8 o más caracteres">
+                        <small id="passwordHelp" class="form-text " style="color: rgb(245, 117, 142);"></small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="passwordConfirm" style="color: #ECE9DD;">Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="Password Confirm" required>
+                        <small id="confirmPasswordHelp" class="form-text " style="color: rgb(245, 117, 142);"></small>
+                    </div>
+                    <label style="color:#ECE9DD">
+                        <input type="checkbox" id="termsCheckbox">
+                        Estoy de acuerdo con las políticas y restricciones al utilizar el app AR.
+                    </label>
+                    <div class="btn-group">
+                        <button type="submit" class="btn-submit" id="btn-register-submit">Registrar</button>
+                    </div>
+                    <p>¿Ya estás registrado? - <a href="/auth/login">Iniciar sesión</a></p>
+                    <div class="btn-group">
+                    </div>
+                </form>
+            </div>
+            <div >
+                <a href="/" class="btn-regresar">Regresar</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const checkbox = document.getElementById("termsCheckbox");
+            const btnRegister = document.getElementById("btn-register-submit");
+
+            checkbox.onchange = function() {
+                console.log("Cambiando");
+                btnRegister.disabled = !checkbox.checked;
+                if (btnRegister.disabled) {
+                    btnRegister.style.opacity = "0.5";
+                } else {
+                    btnRegister.style.opacity = "1";
+                }
+            }
+
+            btnRegister.disabled = true;
+            btnRegister.style.opacity = "0.5";
+        });
+
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('passwordConfirm');
+        const passwordHelp = document.getElementById('passwordHelp');
+        const confirmPasswordHelp = document.getElementById('confirmPasswordHelp');
+
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validatePassword);
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Verificar si las contraseñas coinciden
+            if (password !== confirmPassword) {
+                confirmPasswordHelp.textContent = 'Las contraseñas no coinciden.';
+            } else {
+                confirmPasswordHelp.textContent = '';
+                return true;
+            }
+
+            if (password.length < 8) {
+                passwordHelp.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+            } else {
+                passwordHelp.textContent = '';
+            }
+            
+        }
+
+
+        
+    </script>
+</body>
+</html>

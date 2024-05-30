@@ -1,18 +1,165 @@
 
 
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /* background-color: #142B37; */
+  background-image: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.788),
+      rgba(0, 0, 0, 0.788)
+  )
+  ,url('/images/back.jpg');
+  height: 100vh;
+  width: 100%;
+  padding: 0 5% 0;
+  background-position: center;
+  background-size: cover;
+}
+
+.alert {
+  width: max-content;
+  position: fixed;
+  z-index: 5;
+  top: 5%;
+  right: 3%;
+  animation: fadeOut 3s forwards;
+  animation-delay: 3s;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+  }
 }
 
 a {
   color: #00B7FF;
 }
 
-.card {
-  background-color: #fff;
-  border-radius: 3px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  width: 700px;
-  max-width: 1000px;
+p {
+  color: #ECE9DD;
+}
+
+
+
+.formato-general {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+.container{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .carta {
+  padding: 30px 40px;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+}
+
+.container .carta h1{
+  text-align: center;
+  color: #ECE9DD;
+  font-weight: 400;
+  font-size: 35px;
+  margin-bottom: 25px;
+}
+.btn-group{
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  margin: 15px 0 15px;
+}
+.btn-submit{
+  background-color: #B08441;
+  color: #000000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  color: #ECE9DD;
+}
+.btn-registrar{
+  background-color: #A09C74;
+  color: #000000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  color: #ECE9DD;
+  text-align: center; /* Added code to center the text */
+}
+.btn-regresar{
+  background-color: #787877;
+  color: #000000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  color: #ECE9DD;
+  text-align: center; /* Added code to center the text */
+}
+
+.navbar {
+  background-color: #333;
+  padding: 10px;
+}
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.navbar li {
+  float: left;
+}
+.navbar li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.navbar li a:hover {
+  background-color: #ddd;
+  color: black;
+}
+.navbar .icon {
+  display: none;
+}
+@media screen and (max-width: 600px) {
+  .navbar li:not(:first-child) {display: none;}
+  .navbar li.icon {
+    float: right;
+    display: block;
+  }
+}
+@media screen and (max-width: 600px) {
+  .navbar.responsive {position: relative;}
+  .navbar.responsive .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .navbar.responsive li {
+    float: none;
+    display: block;
+    text-align: center;
+  }
 }

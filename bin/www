@@ -7,25 +7,40 @@
 var app = require('../app');
 var debug = require('debug')('exgen-station:server');
 var http = require('http');
+var https = require("https");
+var fs = require("fs");
+var config = require('../configJS/config.js');
+const ngrok = require('ngrok');
+
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '4001');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
-
-var server = http.createServer(app);
+const llavePrivada = fs.readFileSync(config.privateKeyPath);
+const certificado = fs.readFileSync(config.certificatePath);
+const credenciales = {
+    key: llavePrivada,
+    cert: certificado,
+    passphrase: config.passphrase
+    };
+var server = https.createServer(credenciales, app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port,() => {
+  console.log('Server running on IP: https://localhost:' + port);
+  console.log('Server running on IP: https://' + getIPAddress() + ':' + port);
+
+});
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -77,10 +92,19 @@ function onError(error) {
   }
 }
 
+const getIPAddress = () => {
+  const interfaces = require('os').networkInterfaces();
+  let ip = '';
+  for (const dev in interfaces) {
+    const iface = interfaces[dev].filter(details => details.family === 'IPv4' && !details.internal);
+    if (iface.length > 0) ip = iface[0].address;
+  }
+  return ip;
+};
+
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'

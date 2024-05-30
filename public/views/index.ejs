@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <style>
+        body, h1 {font-family: "Raleway", sans-serif}
+        body, html {
+            height: 100%; 
+            background-color: #101010;
+        }
+        .bgimg {
+            background-image: linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.788),
+                rgba(0, 0, 0, 0.788)
+            ), url('/images/back.jpg');
+            min-height: 100%;
+            background-position: center;
+            background-size: cover;
+        }
+        .button-play {
+            backdrop-filter: blur(10px);
+            background-color: rgba(23, 20, 20, 0.5);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        .button-play:hover {
+            background-color: rgba(23, 20, 20, 0.7);
+        }
+        .title {
+            font-size: 5vw;
+            max-width: 100%;
+            text-align: center;
+        }
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    <title>EXGEN STATION</title>
+</head>
+<body>
+    <% if (typeof notice !== 'undefined' && notice) { %>
+        <div class="alert alert-success" role="notice"><%= notice %></div>
+    <% } %>
+    <% if (typeof alert !== 'undefined' && alert) { %>
+        <div class="alert alert-danger" role="alert"><%= alert %></div>
+    <% } %>
+    <div class="bgimg w3-display-container w3-animate-opacity w3-text-white" style="display: grid; place-items: center;">
+        <div class="w3-display-topleft w3-padding-large w3-xlarge">
+            <%- include('../partials/navigation') %>
+        </div>
+        <div class="w3-display-middle" style="display: grid; place-items: center;">
+            <h1 class="w3-jumbo w3-animate-top title">EXGEN STATION</h1>
+            <hr class="w3-border-grey" style="margin:auto;width:40%">
+            <a href="#" id="playButton" class="w3-large w3-center button-play">Comenzar a jugar</a>
+        </div>
+        <div class="w3-display-bottomleft w3-padding-large">
+            Powered by <a>Exgen Station &copy;</a>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Si desea obtener una mejor experiencia y recompensas debe iniciar sesión o registrarse.</p>
+            <label>
+                <input type="checkbox" id="termsCheckbox">
+                Estoy de acuerdo con las políticas y restricciones al utilizar el app AR.
+            </label>
+            <br><br>
+            <a href="/auth/login" class="w3-button w3-black">Iniciar sesión o registrarse</a>
+            <button id="directPlayButton" class="w3-button w3-black" disabled>Jugar directamente</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CDNS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const modal = document.getElementById("myModal");
+            const btn = document.getElementById("playButton");
+            const span = document.getElementsByClassName("close")[0];
+            const checkbox = document.getElementById("termsCheckbox");
+            const directPlayButton = document.getElementById("directPlayButton");
+
+            // Assuming current_user is a global variable set server-side
+            let current_user = <%- JSON.stringify(current_user) || 'null' %>;
+
+            btn.onclick = function() {
+                if (!current_user) {
+                    modal.style.display = "block";
+                } else {
+                    modal.style.display = "none";
+                    window.location.href = "/arcam";
+                }
+            }
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            checkbox.onchange = function() {
+                directPlayButton.disabled = !checkbox.checked;
+            }
+
+            directPlayButton.onclick = function() {
+                modal.style.display = "none";
+                window.location.href = "/arcam";
+            }
+        });
+    </script>
+</body>
+</html>

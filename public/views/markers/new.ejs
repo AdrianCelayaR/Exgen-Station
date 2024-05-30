@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/stylesidebar.css">
+    <!-- Agregar bootstrap -->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Include pdfMake - http://pdfmake.org/ -->
+    <script src='../../vendor/pdfMake/pdfmake.min.js'></script>
+    <script src='../../vendor/pdfMake/vfs_fonts.js'></script>
+
+    <!-- include THREEx.ArPatternFile -->
+    <script src='../javascripts/threex-arpatternfile.js'></script>
+    <title>Exgen-Station</title>
+  </head>
+  <body>
+    <%- include('../../partials/sidebar') %>
+    <% if (typeof notice !== 'undefined' && notice) { %>
+      <div class="alert alert-success" role="notice"><%= notice %></div>
+    <% } %>
+    <% if (typeof alert !== 'undefined' && alert) { %>
+      <div class="alert alert-danger" role="alert"><%= alert %></div>
+    <% } %>
+    <section class="home">
+      <div class="merkers_container">
+        <div class="text">Nuevo marcador</div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Registrar</h5>
+            </div>
+            <div class="card-body">
+                <form action="/markers/create" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                  <h2>Marker</h2>
+                  <div style="border: 1px solid #ccc; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <div class="row">
+                      <input type="hidden" name="id" value="<%- new_id %>">
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="preset" >Preset:</label>
+                        <input type="text" class="form-control" id="preset" name="preset" placeholder="Nombre del marcador" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="position" >Position:</label>
+                        <input type="text" class="form-control" id="position" name="position" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="rotation" >Rotation:</label>
+                        <input type="text" class="form-control" id="rotation" name="rotation" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="scale" >Scale:</label>
+                        <input type="text" class="form-control" id="scale" name="scale" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="patt" >Suba aquí el la imagen que desea guardar como patt o directamente adjunte el archivo patt:</label>
+                        <input type="file" class="form-control" id="fileinput" name="file" accept=".jpg, .png, .jpeg, .patt" required>
+                      </div>
+                      <div class="mb-3 col-md-4" id="editImgContainer" style="display: none;">
+                        <div style="justify-content: center" class='mdl-grid'>
+                          <div class='mdl-cell mdl-cell--12-col'>
+                            <div class='mdl-tooltip' for='patternRatioSlider'>
+                              Set size of inner image vs black border
+                            </div>
+                            <label class="mdl-js-ripple-effect" for="patternRatioSlider">
+                              <span class="">Pattern Ratio 0.50</span>
+                              <input id='patternRatioSlider' class="mdl-slider mdl-js-slider" type="range" min="10" max="90" value="50">
+                            </label>
+                          </div>
+                        </div>
+                        <div style="justify-content: center" class='mdl-grid'>
+                          <div class='mdl-cell mdl-cell--12-col'>
+                            <div class='mdl-tooltip' for='patternRatioSlider'>
+                              Set the pixel width/height of the image.
+                            </div>
+                            <label class="mdl-js-ripple-effect" for="imageSize">
+                              <span class="">Image size 512px</span>
+                              <input id='imageSize' class="mdl-slider mdl-js-slider" type="range" min="150" max="2500" value="512">
+                            </label>
+                          </div>
+                        </div>
+                        <div style="justify-content: center" class='mdl-grid'>
+                          <div class='mdl-cell mdl-cell--12-col'>
+                            <label class="mdl-js-ripple-effect" for="borderColor">
+                              <span class="">Border color. Please choose a dark one.</span>
+                              <input id='borderColor' type="text" class="form-control" value="black">
+                            </label>
+                            <div class='mdl-tooltip' for='borderColor'>
+                              Set the marker border color, using hexa code or color name.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class='mdl-cell mdl-cell--6-col'>
+                            <div id='imageContainer'></div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                  <br>
+
+                  <h2>Model</h2>
+                  <div style="border: 1px solid #ccc; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <div class="row">
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="glb" >Archivo glb:</label>
+                        <input type="file" class="form-control" id="glb" name="glb" accept=".glb" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="model_position" >Position:</label>
+                        <input type="text" class="form-control" id="model_position" name="model_position" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="model_rotation" >Rotation:</label>
+                        <input type="text" class="form-control" id="model_rotation" name="model_rotation" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="model_scale" >Scale:</label>
+                        <input type="text" class="form-control" id="model_scale" name="model_scale" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="anim_conf" >Configuración de la animación:</label>
+                        <input type="text" class="form-control" id="anim_conf" name="anim_conf" placeholder="Nombre del marcador" value="loop:repeat" required>
+                      </div>
+                      <div class="mb-3 col-md-4" style="display: flex;">
+                        <div>
+                          <label class="form-label" for="audio" >Audio:</label>
+                          <input type="file" class="form-control" id="audio" name="audio" accept=".mp3, .mav">
+                        </div>
+                        <div class="checkbox">
+                          <div class="label">
+                            <input type="hidden" name="bucle_audio" id="bucle_audio_value" value="0">
+                            <input type="checkbox" id="goLang" onchange="updateCheckboxValue(this)">
+                            <label for="goLang">Repetir audio</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+
+                  <h2>Text</h2>
+                  <div style="border: 1px solid #ccc; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <div class="row">
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="text_data" >Texto a mostrar:</label>
+                        <input type="text" class="form-control" id="text_data" name="text_data" placeholder="Nombre del marcador" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="text_color" >Color del texto:</label>
+                        <input type="text" class="form-control" id="text_color" name="text_color" placeholder="ejemplo: green" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="text_position" >Position:</label>
+                        <input type="text" class="form-control" id="text_position" name="text_position" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="text_rotation" >Rotation:</label>
+                        <input type="text" class="form-control" id="text_rotation" name="text_rotation" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                      <div class="mb-3 col-md-4">
+                        <label class="form-label" for="text_scale" >Scale:</label>
+                        <input type="text" class="form-control" id="text_scale" name="text_scale" placeholder="Nombre del marcador" value="0 0 0" required>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+                    <div style="display: flex; justify-content: end;">
+                        <button type="submit" class="btn btn-success" style="background-color: #70ec44; color: #000001;">Guardar</button>
+                    </div>
+                    <div class="btn-group">
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a href="/markers" style="color: #2fabca;">Regresar</a>
+            </div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>
+
+<script>
+    // Función para cargar usuarios y mostrarlos en la lista
+    
+</script>
+
+<style>
+  .alert {
+    width: max-content;
+    position: fixed;
+    z-index: 5;
+    top: 5%;
+    right: 3%;
+    animation: fadeOut 3s forwards;
+    animation-delay: 3s;
+  }
+  .merkers_container {
+    width: auto;
+  }
+  #imageContainer img {
+		width: 100%;
+    max-width: 512px;
+	}
+
+  .checkbox {
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .checkbox .label {
+    padding: 10px 20px;
+    border: 1px solid #ffffff00;
+    border-radius: 5px;
+
+  }
+
+  .checkbox .input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+</style>
+
+<script>
+  var innerImageURL = null
+	var fullMarkerURL = null
+	var imageName = null
+  var extension = null
+  
+  function validateForm() {
+    if(extension === 'patt'){
+      return true;
+    }
+
+    if(innerImageURL === null){
+        alert('upload a file first');
+        return false; // No continúa con el envío del formulario
+    }
+    console.assert(innerImageURL);
+
+    // Convertimos THREEx.ArPatternFile.encodeImageURL en una promesa
+    new Promise(function(resolve, reject) {
+        THREEx.ArPatternFile.encodeImageURL(innerImageURL, function onComplete(patternFileString){
+            resolve(patternFileString);
+        });
+    })
+    .then(function(patternFileString) {
+        // Realizamos el fetch dentro de la cadena de promesas
+        return fetch('/markers/save-patt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: document.querySelector('input[name=id]').value,
+              imageName: imageName,
+              patternFileString: patternFileString,
+            })
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar el archivo');
+        }
+        return response.text();
+    })
+    .then(data => {
+        // alert(data); // Muestra un mensaje al usuario
+        // Aquí puedes enviar el formulario manualmente si todo fue exitoso
+        var domElement = window.document.createElement('a');
+        domElement.href = fullMarkerURL;
+        domElement.download = "pattern-" + (imageName || 'marker') + '.png';
+        document.body.appendChild(domElement)
+        domElement.click();
+        document.body.removeChild(domElement)
+        document.querySelector('form').submit();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar el archivo');
+    });
+
+    return false; // Esto evita que el formulario se envíe de forma sincrónica
+}
+
+
+  document.querySelector('#patternRatioSlider').addEventListener('input', function(){
+		// update the patternRatio number
+		var patternRatio = document.querySelector('#patternRatioSlider').value/100
+		var domElement = document.querySelector('[for=patternRatioSlider] span')
+		domElement.innerHTML = `Pattern Ratio ${patternRatio.toFixed(2)}`
+
+		// update fullMarkerImage
+		updateFullMarkerImage()
+	})
+
+	document.querySelector('#imageSize').addEventListener('input', function(){
+		// update the patternRatio number
+		var imageSize = document.querySelector('#imageSize').value
+		var domElement = document.querySelector('[for=imageSize] span')
+		domElement.innerHTML = `Image size ${imageSize}px`
+
+		// update fullMarkerImage
+		updateFullMarkerImage()
+	})
+
+
+	document.querySelector('#borderColor').addEventListener('input', function(){
+		var imageSize = document.querySelector('#borderColor').value
+		var domElement = document.querySelector('[for=borderColor] span')
+
+		// update fullMarkerImage
+		updateFullMarkerImage()
+	})
+
+
+	document.querySelector('#fileinput').addEventListener('change', function(){
+    // Comprobar si el archivo subido es .patt
+		var file = this.files[0];
+    extension = file.name.split('.').pop();
+    if(extension === 'patt'){
+      document.getElementById('editImgContainer').style.display = 'none';
+      return;
+    } else if (!['jpg', 'jpeg', 'png'].includes(extension)) {
+      alert('Formato de archivo no válido. Solo se permiten archivos (jpg, jpeg, png, patt).');
+      document.getElementById('editImgContainer').style.display = 'none';
+      this.value = '';
+      return;
+    }
+    
+    
+		imageName = file.name
+		// remove file extension
+		imageName = imageName.substring(0, imageName.lastIndexOf('.')) || imageName
+		
+		// debugger
+
+		var reader = new FileReader();
+		reader.onload = function(event){
+			innerImageURL = event.target.result
+			updateFullMarkerImage()
+		};
+		reader.readAsDataURL(file);
+	})
+
+  function updateFullMarkerImage(){
+		// get patternRatio
+		var patternRatio = document.querySelector('#patternRatioSlider').value/100
+		var imageSize = document.querySelector('#imageSize').value
+		var borderColor = document.querySelector('#borderColor').value
+
+		function hexaColor(color) {
+			return /^#[0-9A-F]{6}$/i.test(color);
+		};
+
+		var s = new Option().style;
+		s.color = borderColor;
+  		if (borderColor === '' || (s.color != borderColor && !hexaColor(borderColor))) {
+			// if color not valid, use black
+			borderColor = 'black';
+		}
+
+		THREEx.ArPatternFile.buildFullMarker(innerImageURL, patternRatio, imageSize, borderColor, function onComplete(markerUrl){
+			fullMarkerURL = markerUrl
+
+			var fullMarkerImage = document.createElement('img')
+			fullMarkerImage.src = fullMarkerURL
+
+			// put fullMarkerImage into #imageContainer
+			var container = document.querySelector('#imageContainer')
+			while (container.firstChild) container.removeChild(container.firstChild);
+      // cambiar a display: block el contenedor con id editImgContainer
+      document.getElementById('editImgContainer').style.display = 'block';
+			container.appendChild(fullMarkerImage)
+		})
+	}
+
+
+  function updateCheckboxValue(checkbox) {
+    var hiddenInput = document.getElementById('bucle_audio_value');
+    hiddenInput.value = checkbox.checked ? 1 : 0;
+  }
+</script>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/stylesidebar.css">
+    <!-- Agregar bootstrap -->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <title>Exgen-Station</title>
+  </head>
+  <body>
+    <%- include('../../partials/sidebar') %>
+    <% if (typeof notice !== 'undefined' && notice) { %>
+      <div class="alert alert-success" role="notice"><%= notice %></div>
+    <% } %>
+    <% if (typeof alert !== 'undefined' && alert) { %>
+      <div class="alert alert-danger" role="alert"><%= alert %></div>
+    <% } %>
+    <section class="home">
+      <div class="recompensas_container">
+        <div class="text">Nueva recompensa </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Registrar</h5>
+            </div>
+            <div class="card-body">
+                <form action="/recompensas/create" method="POST">
+                  <div class="row">
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="recompensa" >Recompensa:</label>
+                        <input type="text" class="form-control" id="recompensa" name="recompensa" placeholder="Nombre de la recompensa" required>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="tipo">Tipo</label>
+                        <select class="form-control" id="tipo" name="tipo" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="marcador">Marcador</option>
+                            <option value="geolocalizacion">Geolocalización</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="cantidad_experiencias">Cantidad de experiencias:</label>
+                        <input type="number" class="form-control" name="cantidad_experiencias" placeholder="Número de experiencias:" min=1 oninput="this.value = this.value.replace(/[^0-9]/g, '')" required/>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="descripcion" >Descripción:</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Descripción de la recompensa" rows="5" required></textarea>
+                    </div>
+
+                  </div>
+                
+                    <div style="display: flex; justify-content: end;">
+                        <button type="submit" class="btn btn-success" style="background-color: #70ec44; color: #000001;">Guardar</button>
+                    </div>
+                    <div class="btn-group">
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a href="/recompensas" style="color: #2fabca;">Regresar</a>
+            </div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>
+
+<script>
+    // Función para cargar usuarios y mostrarlos en la lista
+    
+</script>
+
+<style>
+  .alert {
+    width: max-content;
+    position: fixed;
+    z-index: 5;
+    top: 5%;
+    right: 3%;
+    animation: fadeOut 3s forwards;
+    animation-delay: 3s;
+  }
+  .recompensas_container {
+    width: auto;
+  }
+
+</style>
+
+<script>
+  
+</script>

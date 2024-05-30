@@ -1,1 +1,16 @@
+<<<<<<< HEAD
 node_modules
+=======
+SoftwareCertificates/
+config/config.json
+config/config
+config\config.json
+config\config
+config/
+config\
+.env
+seeders/20240316215254-demo-users
+seeders/20240316215254-demo-users.js
+public\uploads\markers
+public/uploads/markers
+>>>>>>> develop

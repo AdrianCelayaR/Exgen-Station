@@ -1,0 +1,235 @@
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Quicksand", sans-serif;
+}
+
+.arButton {
+  position: fixed;
+  z-index: 100;
+  background-color: #142b31;
+  color: white;
+  border: 2px solid #000;
+  border-radius: 50%;
+  box-shadow: 5px 5px 0px #000;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+#takeScreenshot {
+  padding: 10px 20px;
+  left: 10px;
+  bottom: 10px;
+}
+
+#openMenu {
+  padding: 10px 20px;
+  right: 10px;
+  bottom: 10px;
+}
+
+.arButton:hover {
+  background-color: #345364;
+  border: 2px solid #b08441;
+  box-shadow: 5px 5px 0px #b08441;
+}
+
+.arButton:active {
+  background-color: white;
+  box-shadow: none;
+  transform: translateY(4px);
+}
+
+#progesoContainer {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 100;
+  padding: 1;
+  box-sizing: border-box;
+}
+
+#progresoMarker {
+  width: 100%;
+  border-radius: 30px;
+  height: 35px;
+  border: 2px solid #000;
+  box-shadow: 5px 5px 0px #000;
+  box-sizing: border-box;
+}
+
+#progresoMarker::-webkit-progress-bar {
+  background-color: #ece9dd;
+  border-radius: 30px;
+}
+
+#progresoMarker::-webkit-progress-value {
+  background-color: #b08441;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 8px 5px 0px #142b31;
+}
+.progress-point {
+  z-index: 102;
+  position: absolute;
+  top: 0px; /* Adjust based on the desired position */
+  font-size: 35px; /* Adjust size as needed */
+  color: gold; /* Adjust color as needed */
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out, bottom 0.4s ease-in-out;
+}
+
+.progress-point.show {
+  opacity: 1;
+  top: -8px; /* Ajuste para hacer el punto visible con animación */
+}
+
+.menu {
+  position: fixed;
+  top: 0%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  background-color: #ece9dd;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 30px;
+  border: 2px solid #000;
+  box-shadow: 5px 5px 0px #000;
+  transition: opacity 0.25s ease-in-out, top 0.3s ease-in-out;
+  z-index: -1;
+  opacity: 0;
+}
+
+.menu.open {
+  top: 50%;
+  opacity: 1;
+  z-index: 200;
+}
+
+.menuContenido {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+/* .btnwrap {
+  bottom: 10;
+  margin-top: 50px;
+  margin-bottom: 10px;
+} */
+
+.btnwrap {
+  position: absolute;
+  bottom: 10px; /* Ajusta según sea necesario */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between; /* Ajusta la distribución de los botones */
+  width: 100%; /* O ajusta según sea necesario */
+}
+
+.menuButton {
+  width: auto;
+  height: auto;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 2rem;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  background-color: #345364;
+  color: #ece9dd;
+  padding: 10px;
+}
+
+.menuButton:hover {
+  background-color: #b08441;
+  border: 2px solid #345364;
+  box-shadow: 5px 5px 0px #345364;
+  color: #000;
+}
+
+.menuButton:active {
+  background-color: white;
+  box-shadow: none;
+  transform: translateY(4px);
+  color: #000;
+}
+
+.textImage {
+  z-index: 150;
+}
+
+.markerImage {
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.marcadores_container {
+  overflow-y: auto;
+  margin: 0px 0px 20px 0px;
+  display: grid;
+  place-items: center;
+}
+
+.img-gallery {
+  margin: 5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-auto-rows: minmax(300px, 1fr);
+  gap: 30px;
+}
+.recompensas_container {
+  overflow-y: auto;
+  width: 80%;
+  margin: 10px 0px 20px 0px;
+  display: block; /* Change list-item to block for better handling of nested divs */
+  min-height: 80px;
+}
+
+.titleReco {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 10px; /* Space between title and description */
+  color: #b08441;
+}
+
+.descReco {
+  color: #142b31;
+  font-weight: normal;
+  font-size: 0.8em;
+  margin-bottom: 20px; /* Space between items */
+}
+
+.img-recompensas_list {
+  width: 100%;
+}
+
+.img-gallery > img {
+  display: block;
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: 0.6s ease;
+}
+
+.img-gallery img:hover {
+  scale: 0.85;
+  box-shadow: 10px 26px 60px rgba(68, 77, 136, 0.3);
+}
